@@ -98,29 +98,6 @@ class SmallMVCLoader{
 		}
 		return $this->includeFile($scriptName);
 	}
-	//auto create db object
-	public function database($poolName = null, $table = null){
-		$config = SMvc::instance(null, 'default')->config;
-		if(!$poolName)
-			$poolName = isset($config['default_pool']) ? $config['default_pool'] : 'default';
-		if($poolName && isset(SMvc::instance(null, 'default')->dbs[$poolName])){
-			return SMvc::instance(null, 'default')->dbs[$poolName];
-		}
-		if($poolName && isset($config[$poolName]) && !empty($config[$poolName]['plugin'])){
-			try{
-				$fileName = $config[$poolName]['plugin'] . '.php';
-				$this->includeFile($fileName);
-			}catch(Exception $e){
-				$e = new Exception("Cannot find '{$fileName}'");
-				$e->type = DEBUG;
-				throw $e;
-			}
-			$modelClass = new ReflectionClass($config[$poolName]['plugin']);
-			SMvc::instance(null, 'default')->dbs[$poolName] = $modelClass->newInstanceArgs(array($config[$poolName]));	
-			return SMvc::instance(null, 'default')->dbs[$poolName];
-		}
-		return null;
-	}
 	private function fileExists($fileName = null){
 		/*check errors and prepare data*/
 		if(!isset($fileName) || empty($fileName))
