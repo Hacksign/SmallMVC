@@ -7,18 +7,15 @@ class SmallMVCLoader{
 	//param2:params pass to Model
 	public function model($modelName, $param = array()){
 		if(empty($modelName)){
-			$e = new Exception("Model name cannot be empty");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Model name cannot be empty", DEBUG);
 			throw $e;
 		}
 		if(!preg_match('!^[a-zA-Z][a-zA-Z0-9_]+$!', $modelName)){
-			$e = new Exception("Model name '{$modelName}' is an invalid syntax");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Model name '{$modelName}' is an invalid syntax", DEBUG);
 			throw $e;
 		}
 		if(method_exists($this, $modelName)){
-			$e = new Exception("Model name '{$modelName}' is an invalid name");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Model name '{$modelName}' is an invalid name", DEBUG);
 			throw $e;
 		}
 	
@@ -39,8 +36,7 @@ class SmallMVCLoader{
 				$this->includeFile($fileName);
 			}
 		}catch(Exception $e){
-			$e = new Exception("Unknow file '{$fileName}'");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Unknow file '{$fileName}'", DEBUG);
 			throw $e;
 		}
 		$table = preg_replace("/(.*?)Model$/", "$1", $aliasName);
@@ -60,18 +56,15 @@ class SmallMVCLoader{
 	public function library($libName, $params = array()){
 		$alias = $libName;
 		if(empty($alias)){
-			$e = new Exception("Library name cannot be empty");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Library name cannot be empty", DEBUG);
 			throw $e;
 		}
 		if(!preg_match('!^[@a-zA-Z]\.{0,1}[a-zA-Z_]+$!', $alias)){
-			$e = new Exception("Library name '{$alias}' is an invalid syntax");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Library name '{$alias}' is an invalid syntax", DEBUG);
 			throw $e;
 		}
 		if(method_exists($this, $alias)){
-			$e = new Exception("Library name '{$alias}' is an invalid name");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Library name '{$alias}' is an invalid name", DEBUG);
 			throw $e;
 		}
 			
@@ -92,8 +85,7 @@ class SmallMVCLoader{
 	//only load script but do not auto create
 	public function script($scriptName){
 		if(!preg_match('/^[0-9a-zA-Z@][a-zA-Z_.0-9]+$/', $scriptName)){
-			$e = new Exception("Invalid script name '{$scriptName}'");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Invalid script name '{$scriptName}'", DEBUG);
 			throw $e;
 		}
 		return $this->includeFile($scriptName);
@@ -121,8 +113,7 @@ class SmallMVCLoader{
 	}
 	private function includeFile($fileName = null){
 		if(!isset($fileName) || empty($fileName)){
-			$e = new Exception("fileName must be set");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("fileName must be set", DEBUG);
 			throw $e;
 		}
 		if(!preg_match('/\.php$/', $fileName))

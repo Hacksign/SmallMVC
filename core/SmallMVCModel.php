@@ -13,8 +13,7 @@ class SmallMVCModel{
   }
 	function __construct($table,$poolName = null){
 		if(!isset($table)){
-			$e = new Exception("Table name must be set!");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Table name must be set!", DEBUG);
 			throw $e;
 		}
 		$this->table = $table;
@@ -27,13 +26,11 @@ class SmallMVCModel{
 		if($poolName && isset($config[$poolName]) && !empty($config[$poolName]['plugin'])){
 			$config = $config[$poolName];
 			if(!class_exists('PDO',false)){
-			 $e = new Exception("PHP PDO package is required.");     
-			 $e->type = DEBUG;
+			 $e = new SmallMVCException("PHP PDO package is required.", DEBUG);     
 			 throw $e;
 			}
 			if(empty($config)){
-				$e = new Exception("database definitions required.");
-			 $e->type = DEBUG;
+				$e = new SmallMVCException("database definitions required.", DEBUG);
 			 throw $e;
 			}
 			if(empty($config['charset']))
@@ -50,8 +47,7 @@ class SmallMVCModel{
 					);
 				$this->pdo->exec("SET CHARACTER SET {$config['charset']}"); 
 			}catch (PDOException $e) {
-					$e = new Exception(sprintf("Can't connect to PDO database '{$config['type']}'. Error: %s",$e->getMessage()));
-					$e->type = DEBUG;
+					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config['type']}'. Error: %s",$e->getMessage()), DEBUG);
 					throw $e;
 			}
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
@@ -70,8 +66,7 @@ class SmallMVCModel{
 	}
   public function where($clause,$args){
 		if(empty($clause) || is_int($clasue)){
-      $e = new Exception(sprintf("where cannot be empty and must be a string"));
-			$e->type = DEBUG;
+      $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
 			throw $e;
 		}
   
@@ -90,8 +85,7 @@ class SmallMVCModel{
   }
   public function orwhere($clause,$args){
 		if(empty($clause) || is_int($clasue)){
-      $e = new Exception(sprintf("where cannot be empty and must be a string"));
-			$e->type = DEBUG;
+      $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
 			throw $e;
 		}
   
@@ -161,8 +155,7 @@ class SmallMVCModel{
   public function update($columns){
     if(empty($columns)||!is_array($columns))
     {
-      $e = new Exception("Unable to update, at least one column required");
-			$e->type = DEBUG;
+      $e = new SmallMVCException("Unable to update, at least one column required", DEBUG);
 			throw $e;
       return false;
     }
@@ -196,8 +189,7 @@ class SmallMVCModel{
   {
     if(empty($columns)||!is_array($columns))
     {
-      $e = new Exception("Unable to insert, at least one column required");
-			$e->type = DEBUG;
+      $e = new SmallMVCException("Unable to insert, at least one column required", DEBUG);
 			throw $e;
       return false;
     }
@@ -269,8 +261,7 @@ class SmallMVCModel{
     
     // make sure number of ? match number of args
 		if(is_array($clause) && (count($args) != count($clause))){
-      $e = new Exception("Number of where clause args don't match number args");
-			$e->type = DEBUG;
+      $e = new SmallMVCException("Number of where clause args don't match number args", DEBUG);
 			throw $e;
 		}
       
@@ -313,8 +304,7 @@ class SmallMVCModel{
   private function _query_assemble(&$params,$fetch_mode=null){
     if(empty($this->query_params['from'])){
 			if(empty($this->table)){
-				$e = new Exception("Unable to get(), set from() first");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Unable to get(), set from() first", DEBUG);
 				throw $e;
 				return false;
 			}
@@ -376,8 +366,7 @@ class SmallMVCModel{
     try {
       $this->result = $this->pdo->prepare($query);
     } catch (PDOException $e) {
-        $e = new Exception(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query));
-				$e->type = DEBUG;
+        $e = new SmallMVCException(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query), DEBUG);
 				throw $e;
         return false;
     }      
@@ -386,8 +375,7 @@ class SmallMVCModel{
     try {
       $this->result->execute($params);  
     } catch (PDOException $e) {
-        $e = new Exception(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query));
-				$e->type = DEBUG;
+        $e = new SmallMVCException(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query), DEBUG);
 				throw $e;
         return false;
     }
@@ -425,8 +413,7 @@ class SmallMVCModel{
 			);
 		foreach($regexs as $regex){
 			if(preg_match("/{$regex}/is", $item)){
-				$e = new Exception("SQL Injection Detected");
-				$e->type = ERROR;
+				$e = new SmallMVCException("SQL Injection Detected", DEBUG);
 				throw $e;
 				exit();
 			}

@@ -15,50 +15,43 @@ function create_default_directories(){
 	if(defined('APPDIR')){
 		if(!file_exists(APPDIR)){
 			if(!mkdir(APPDIR)){
-				$e = new Exception("Cannot create directory '".APPDIR ."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR ."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'controller')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'controller')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'controller'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'controller'."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'model')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'model')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'model'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'model'."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'view')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'view')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'view'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'view'."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'plugins')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'plugins')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'plugins'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'plugins'."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'config')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'config')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'config'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'config'."'", DEBUG);
 				throw $e;
 			}
 		}
 		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'cache')){
 			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'cache')){
-				$e = new Exception("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'cache'."'");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'cache'."'", DEBUG);
 				throw $e;
 			}
 		}
@@ -69,8 +62,7 @@ function create_default_directories(){
 //param2:the params pass to Model
 function M($name = null, $params = null){
 	if(empty($name)){
-		$e = new Exception("Model name is empty");
-		$e->type = DEBUG;
+		$e = new SmallMVCException("Model name is empty", DEBUG);
 		throw $e;
 	}
 	(preg_match("/Model$/", $name))? null : $name .= 'Model';
@@ -89,8 +81,7 @@ function M($name = null, $params = null){
 }
 function C($name = null, $params = null){
 	if(empty($name)){
-		$e = new Exception("Controller name is empty");
-		$e->type = DEBUG;
+		$e = new SmallMVCException("Controller name is empty", DEBUG);
 		throw $e;
 	}
 	(preg_match("/Controller$/", $name))? null : $name .= 'Controller';
@@ -126,8 +117,7 @@ function redirect($url, $time=0, $msg='') {
 }
 function import($name = null){
 	if(empty($name)){
-		$e = new Exception("import name is empty");
-		$e->type = DEBUG;
+		$e = new SmallMVCException("import name is empty", DEBUG);
 		throw $e;
 	}
 	//get SMVC controller object

@@ -15,18 +15,22 @@ class SmallMVCViewer{
 	}
 	public function display($fileName = null, $viewVars = null){
 		if(empty($fileName)) {
-			$e = new Exception("\$fileName must be set");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("\$fileName must be set", DEBUG);
 			throw $e;
 			return;
 		}else{
 			if(!preg_match('/\.html$/', $fileName))
 				$fileName .= '.html';
-			$fileName = APPDIR . DS . 'view' .  DS . $fileName;
+			//if start with '#.' find in system directory, this is for system use only!
+			if(preg_match('/^#\./', $fileName)){
+				$fileName = preg_replace('/^#\.(.*)/', '$1', $fileName);
+				$fileName = SMVC_BASEDIR . DS . 'view' .  DS . $fileName;
+			}
+			else
+				$fileName = APPDIR . DS . 'view' .  DS . $fileName;
 		}
 		if(!file_exists($fileName)){
-			$e = new Exception("display file:$fileName doesn't exists");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("display file:$fileName doesn't exists", DEBUG);
 			throw $e;
 			return;
 		}
@@ -43,8 +47,7 @@ class SmallMVCViewer{
 	 */
 	public function layout($template = null, $layout = null){
 		if(empty($template)) {
-			$e = new Exception("\$template must be set");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("\$template must be set", DEBUG);
 			throw $e;
 			return;
 		}else{
@@ -53,8 +56,7 @@ class SmallMVCViewer{
 			$template = APPDIR . DS . 'view' .  DS . $template;
 		}
 		if(!file_exists($template)){
-			$e = new Exception("template file:$template doesn't exists");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("template file:$template doesn't exists", DEBUG);
 			throw $e;
 			return;
 		}
@@ -64,8 +66,7 @@ class SmallMVCViewer{
 		}else
 			$layout = substr($template, 0, strrpos($template, DS, -1)) . DS . 'layout.html';
 		if(!file_exists($layout)){
-			$e = new Exception("layout file:$layout doesn't exists");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("layout file:$layout doesn't exists", DEBUG);
 			throw $e;
 			return;
 		}
@@ -75,7 +76,7 @@ class SmallMVCViewer{
 			$layout = file_get_contents($layout, LOCK_EX);
 			$layout = "<?php 
 				if(!isset(\$_SESSION['__prevent_template_view_directly_']) || (isset(\$_SESSION['__prevent_template_view_directly_']) && !\$_SESSION['__prevent_template_view_directly_'])){
-					echo 'can not access this file derectly!';
+					echo 'can not access this file directly!';
 					exit(0);
 						}
 				?>\n".$layout;
@@ -91,15 +92,13 @@ class SmallMVCViewer{
 			}
 			$content = preg_replace("/{__CONTENT__}/s", $content, $layout);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
-				$e = new Exception("can not wirte content to cache/ directroy");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("can not wirte content to cache/ directroy", DEBUG);
 				throw $e;
 			}
 			extract($this->viewVars, EXTR_OVERWRITE);
 		  $this->_view($cacheFile);
 		}else{
-			$e = new Exception("Not a layout file:$layout");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Not a layout file:$layout", DEBUG);
 			throw $e;
 		}
 	}
@@ -130,8 +129,7 @@ class SmallMVCViewer{
 			);
 			foreach($regex as $a){
 				if(preg_match($a, $content)){
-					$e = new Exception("there are some framework defined variable in your template file,please check!");	
-					$e->type = EXCEP;
+					$e = new SmallMVCException("there are some framework defined variable in your template file,please check!", DEBUG);	
 					throw $e;
 				}
 			}
@@ -156,8 +154,7 @@ class SmallMVCViewer{
 			$this->assign('appdir', preg_replace('/^\/*(.*)/', '$1', WEB_ROOT . '/' . APPDIR));
 			$this->assign('webroot', preg_replace('/^\/*(.*)/', '$1', WEB_ROOT));
 		}else{
-			$e = new Exception("Please check WEB_ROOT defination in entry file(SmallMVC.php)");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("Please check WEB_ROOT defination in entry file(SmallMVC.php)", DEBUG);
 			throw $e;
 		}
 	}

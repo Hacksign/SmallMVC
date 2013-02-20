@@ -19,8 +19,7 @@ class SmallMVCController{
 			if(($rMethod = $this->viewReflection->getMethod($name))){
 				empty($args) ? $rMethod->invoke($this->view) : $rMethod->invokeArgs($this->view, $args);
 			}else{
-				$e = new Exception("can not find method:$name");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("can not find method:$name", DEBUG);
 				throw $e;
 			}
 		}catch(ReflectionException $e){
@@ -37,8 +36,7 @@ class SmallMVCController{
 					return true;
 				}
 			}//end foreach
-			$e = new Exception("action:{$name} dosen't exists in controller");
-			$e->type = DEBUG;
+			$e = new SmallMVCException("action:{$name} dosen't exists in controller", DEBUG);
 			throw $e;
 		}//end catch
 	}//end function _call
@@ -47,8 +45,7 @@ class SmallMVCController{
 	}
 	protected function getInstance($instName = null){
 		if(empty($instName)){
-				$e = new Exception("Instance Name is required");
-				$e->type = DEBUG;
+				$e = new SmallMVCException("Instance Name is required", DEBUG);
 				throw $e;
 		}
 		return SMvc::instance(null, $instName);
