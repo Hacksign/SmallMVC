@@ -1,0 +1,6 @@
+<?php
+echo "$info<br/>";
+foreach($backtrace as $each){
+echo "{$each['function']}\t-{$each['file']}:{$each['line']}<br/>";
+}
+?>
