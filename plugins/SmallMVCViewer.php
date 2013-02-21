@@ -30,7 +30,7 @@ class SmallMVCViewer{
 				$fileName = APPDIR . DS . 'view' .  DS . $fileName;
 		}
 		if(!file_exists($fileName)){
-			$e = new SmallMVCException("display file:$fileName doesn't exists", DEBUG);
+			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
 			throw $e;
 			return;
 		}
@@ -56,7 +56,7 @@ class SmallMVCViewer{
 			$template = APPDIR . DS . 'view' .  DS . $template;
 		}
 		if(!file_exists($template)){
-			$e = new SmallMVCException("template file:$template doesn't exists", DEBUG);
+			$e = new SmallMVCException("template:$template", PAGE_NOT_FOUND);
 			throw $e;
 			return;
 		}
@@ -66,7 +66,7 @@ class SmallMVCViewer{
 		}else
 			$layout = substr($template, 0, strrpos($template, DS, -1)) . DS . 'layout.html';
 		if(!file_exists($layout)){
-			$e = new SmallMVCException("layout file:$layout doesn't exists", DEBUG);
+			$e = new SmallMVCException("layout:$layout", PAGE_NOT_FOUND);
 			throw $e;
 			return;
 		}

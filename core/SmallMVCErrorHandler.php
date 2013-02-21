@@ -2,6 +2,7 @@
 define('DEBUG', 0);
 define('ERROR', 1);
 define('EXCEP', 2);
+define('PAGE_NOT_FOUND', 3);
 class SmallMVCException extends Exception{
 	var $type = null;
 	
@@ -16,8 +17,15 @@ class SmallMVCExceptionHandler extends Exception{
 		if(SMvc::instance(null, 'default')->config['debug']){
 			$controller = SMvc::instance(null, 'controller');
 			$controller->assign('info', $e->message);
-			$controller->assign('backtrace', $e->getTrace());
-			$controller->display('#.backtrace');
+			switch($e->type){
+				case PAGE_NOT_FOUND:
+					$controller->display('#.404');
+					break;
+				case DEBUG:
+					$controller->assign('backtrace', $e->getTrace());
+					$controller->display('#.backtrace');
+					break;
+			}
 		}else{
 			echo "Ops~.something is wrong!";
 		}
