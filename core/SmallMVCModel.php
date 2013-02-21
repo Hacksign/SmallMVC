@@ -25,30 +25,29 @@ class SmallMVCModel{
 			return SMvc::instance(null, 'default')->dbs[$poolName];
 		}
 		if($poolName && isset($config[$poolName]) && !empty($config[$poolName]['plugin'])){
-			$config = $config[$poolName];
 			if(!class_exists('PDO',false)){
 			 $e = new SmallMVCException("PHP PDO package is required.", DEBUG);     
 			 throw $e;
 			}
-			if(empty($config)){
+			if(empty($config[$poolName])){
 				$e = new SmallMVCException("database definitions required.", DEBUG);
 			 throw $e;
 			}
-			if(!empty($config['charset']))
-			 $charset = $config['charset'];
+			if(empty($config[$poolName]['charset']))
+				$config[$poolName]['charset'] = $config['default_charset'];
 
-			$this->dbname = $config['name'];
-			$dsn = !empty($config['dsn']) ? $config['dsn'] : "{$config['type']}:host={$config['host']};dbname={$config['name']};charset={$charset}";
+			$this->dbname = $config[$poolName]['name'];
+			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']};charset={$charset}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
-					$config['user'],
-					$config['pass'],
-					array(PDO::ATTR_PERSISTENT => !empty($config['persistent']) ? true : false)
+					$config[$poolName]['user'],
+					$config[$poolName]['pass'],
+					array(PDO::ATTR_PERSISTENT => !empty($config[$poolName]['persistent']) ? true : false)
 					);
-				$this->pdo->exec("SET CHARACTER SET {$config['charset']}"); 
+				$this->pdo->exec("SET CHARACTER SET {$config[$poolName]['charset']}"); 
 			}catch (PDOException $e) {
-					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config['type']}'. Error: %s",$e->getMessage()), DEBUG);
+					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config[$poolName]['type']}'. Error: %s",$e->getMessage()), DEBUG);
 					throw $e;
 			}
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
