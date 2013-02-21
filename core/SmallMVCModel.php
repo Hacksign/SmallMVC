@@ -18,6 +18,7 @@ class SmallMVCModel{
 		}
 		$this->table = $table;
 		$config = SMvc::instance(null, 'default')->config;
+		$charset = empty($config['default_charset']) ? 'utf-8' : $config['default_charset'];
 		if(!$poolName)
 			$poolName = isset($config['default_pool']) ? $config['default_pool'] : 'default';
 		if($poolName && isset(SMvc::instance(null, 'default')->dbs[$poolName])){
@@ -33,11 +34,11 @@ class SmallMVCModel{
 				$e = new SmallMVCException("database definitions required.", DEBUG);
 			 throw $e;
 			}
-			if(empty($config['charset']))
-			 $config['charset'] = 'utf8';
+			if(!empty($config['charset']))
+			 $charset = $config['charset'];
 
 			$this->dbname = $config['name'];
-			$dsn = !empty($config['dsn']) ? $config['dsn'] : "{$config['type']}:host={$config['host']};dbname={$config['name']};charset={$config['charset']}";
+			$dsn = !empty($config['dsn']) ? $config['dsn'] : "{$config['type']}:host={$config['host']};dbname={$config['name']};charset={$charset}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
