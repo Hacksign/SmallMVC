@@ -18,7 +18,7 @@ class SmallMVCExceptionHandler extends Exception{
 		if(SMvc::instance(null, 'default')->config['debug']){
 			switch($e->type){
 				case PAGE_NOT_FOUND:
-					$this->assign('info', $e->message."<br/>404 - PAGE NOT FOUND :(");
+					$controller->assign('info', $e->message."<br/>404 - PAGE NOT FOUND :(");
 					$controller->display('#.message');
 					break;
 				case DEBUG:
@@ -28,7 +28,7 @@ class SmallMVCExceptionHandler extends Exception{
 					break;
 			}
 		}else{
-			$this->assign('info', "Ops~.something is wrong!");
+			$controller->assign('info', "Ops~.something is wrong!");
 			$controller->display('#.message');
 		}
 	}
