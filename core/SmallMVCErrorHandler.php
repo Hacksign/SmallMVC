@@ -14,20 +14,22 @@ class SmallMVCException extends Exception{
 }
 class SmallMVCExceptionHandler extends Exception{
   public static function handleException(SmallMVCException $e){
+		$controller = SMvc::instance(null, 'controller');
 		if(SMvc::instance(null, 'default')->config['debug']){
-			$controller = SMvc::instance(null, 'controller');
-			$controller->assign('info', $e->message);
 			switch($e->type){
 				case PAGE_NOT_FOUND:
-					$controller->display('#.404');
+					$this->assign('info', $e->message."<br/>404 - PAGE NOT FOUND :(");
+					$controller->display('#.message');
 					break;
 				case DEBUG:
 					$controller->assign('backtrace', $e->getTrace());
+					$controller->assign('info', $e->message);
 					$controller->display('#.backtrace');
 					break;
 			}
 		}else{
-			echo "Ops~.something is wrong!";
+			$this->assign('info', "Ops~.something is wrong!");
+			$controller->display('#.message');
 		}
 	}
 }
