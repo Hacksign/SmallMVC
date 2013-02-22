@@ -54,6 +54,17 @@ class SmallMVCModel{
 		}
 	}
 
+	public function getQueryString(){
+		$tmp = $this->query_params;
+     $query = $this->_query_assemble($params,$fetch_mode);
+		 $query = explode('?', $query);
+		 for($i = 0; $i < count($query); $i++){
+			 $query[$i] .= $params[$i];
+		 }
+		 $query = implode('', $query);
+		 $this->query_params = $tmp;
+		 return $query;
+	}
   public function select($clause){
     $this->query_params['select'] = $clause;
 		return $this;
@@ -72,14 +83,13 @@ class SmallMVCModel{
   
 		if(is_string($clause))
 			$clause = array($clause);
-		for($i = 0; $i < count($clause); $i++){
-			if(!preg_match('![=<>]!',$clause[$i]))
-			 $clause[$i] .= '=';  
+		foreach($clause as &$each){
+			if(!preg_match('![=<>]!',$each))
+			 $each .= ' = ';  
 		
-			if(strpos($clause[$i],'?')===false)
-				$clause[$i] .= '?';
+			if(strpos($each,'?')===false)
+				$each .= ' ? ';
 		}
-      
     $this->_where($clause,(array)$args,'AND');    
 		return $this;
   }
