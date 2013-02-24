@@ -44,12 +44,15 @@ set_include_path(
 	var $loader = null;
 	var $urlSegments = null;
 	var $dbs = null;
+	static $scriptExecComplete = null;
 	
 	public function __construct($id = 'default'){
+		self::$scriptExecComplete = false;
 		self::instance($this, $id);
 		$_SESSION['__prevent_template_view_directly_'] = true;
 	}
 	function __destruct(){
+		self::$scriptExecComplete = true;
 		if(isset($_SESSION)){
 			session_destroy();
 		}

@@ -31,6 +31,7 @@ class SmallMVCExceptionHandler extends Exception{
 			$controller->assign('info', "Ops~.something is wrong!");
 			$controller->display('#.message');
 		}
+		SMvc::$scriptExecComplete = true;
 	}
 }
 function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
@@ -52,7 +53,7 @@ function SmallMVCShutdownFunction(){
 	}else if($e){
 		$message = "Fatal Erro !Please check your log file!";
 	}
-	if(headers_sent()){
+	if(!SMvc::$scriptExecComplete){
 		$controller->assign('info', $message);
 		$controller->display('#.message');
 	}
