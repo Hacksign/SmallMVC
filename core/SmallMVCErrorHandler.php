@@ -41,15 +41,18 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 	}
 }
 function SmallMVCShutdownFunction(){
+	$controller = SMvc::instance(null, 'controller');
 	$e = error_get_last();
 	if($e && SMvc::instance(null,'default')->config['debug']){
-		echo "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
+		$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
 					<b>Message:</b> {$e['message']}<br />
 					<b>File:</b> {$e['file']}<br />
 					<b>Line:</b> {$e['line']}
 					</span>";
 	}else if($e){
-		echo "Fatal Erro !Please check your log file!";
+		$message = "Fatal Erro !Please check your log file!";
 	}
+	$controller->assign('info', $message);
+	$controller->display('#.message');
 }
 ?>

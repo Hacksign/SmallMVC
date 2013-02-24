@@ -1,9 +1,16 @@
 <?php
-function dump($var){
-	echo "<span style='color:lightblue;' title='file:".__FILE__." line:".__LINE__."'>" . $var . "</span><br/>";
-}
-function default_index(){
-	echo "<div style='text-align:center;width:100%;line-height:20px;margin-top:20%;'>Welcome use SmallMVC Framework</div>";
+function dump($var, $label=null) {
+    $label = ($label === null) ? '' : rtrim($label) . ' ';
+		$output = "<div style='text-align:left;'>";
+		ob_start();
+		var_dump($var);
+		$output .= ob_get_clean();
+		if (!extension_loaded('xdebug')) {
+			$output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
+			$output = '<pre>' . $label . htmlspecialchars($output, ENT_QUOTES) . '</pre>';
+		}
+		$output .= "</div>";
+		echo $output;
 }
 function copy_right(){
 return "<div style='text-align:center;'>
@@ -105,7 +112,9 @@ function redirect($url, $time=0, $msg='') {
             header("Location: " . $url);
         } else {
             header("refresh:{$time};url={$url}");
-            echo($msg);
+						$controller = SMvc::instance(null, 'controller');
+						$controller->assign('info', $msg);
+            $controller->display('#.message');
         }
         exit();
     } else {

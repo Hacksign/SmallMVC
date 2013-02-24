@@ -41,7 +41,10 @@ class SmallMVCController{
 		}//end catch
 	}//end function _call
 	protected function redirect($url, $time = 0, $msg = ''){
-		redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
+		if(preg_match('#^(http)[s]*://#', $url))
+			redirect($url, $time, $msg);
+		else
+			redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
 	}
 	protected function getInstance($instName = null){
 		if(empty($instName)){
