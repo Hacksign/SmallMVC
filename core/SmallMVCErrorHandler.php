@@ -52,7 +52,9 @@ function SmallMVCShutdownFunction(){
 	}else if($e){
 		$message = "Fatal Erro !Please check your log file!";
 	}
-	$controller->assign('info', $message);
-	$controller->display('#.message');
+	if(headers_sent()){
+		$controller->assign('info', $message);
+		$controller->display('#.message');
+	}
 }
 ?>
