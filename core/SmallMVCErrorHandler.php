@@ -57,7 +57,7 @@ function SmallMVCShutdownFunction(){
 	}else if($e){
 		$message = "Fatal Erro !Please check your log file!";
 	}
-	if(!SMvc::$scriptExecComplete){
+	if($e && !SMvc::$scriptExecComplete){
 		$controller->assign('info', $message);
 		$controller->display('#.message');
 	}
