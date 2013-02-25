@@ -67,7 +67,6 @@ class SmallMVCLoader{
 			$e = new SmallMVCException("Library name '{$alias}' is an invalid name", DEBUG);
 			throw $e;
 		}
-			
 		$this->includeFile($libName);
 		if(preg_match('/^@\./', $libName)){
 			$libName = preg_replace('/^@\.(.*)/', '$1', $libName);

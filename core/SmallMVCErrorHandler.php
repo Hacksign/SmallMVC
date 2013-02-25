@@ -15,6 +15,10 @@ class SmallMVCException extends Exception{
 class SmallMVCExceptionHandler extends Exception{
   public static function handleException(SmallMVCException $e){
 		$controller = SMvc::instance(null, 'controller');
+		if(!$controller){
+			$controller = SMvc::instance(null, 'default')->config['default_controller'];
+			$controller = SMvc::instance(null, 'loader')->library($controller);
+		}
 		if(SMvc::instance(null, 'default')->config['debug']){
 			switch($e->type){
 				case PAGE_NOT_FOUND:
