@@ -5,7 +5,7 @@ class SmallMVCLoader{
 	//auto create model
 	//param1:Model file name without .php ext
 	//param2:params pass to Model
-	public function model($modelName, $param = array()){
+	public function model($modelName, $params = array()){
 		if(empty($modelName)){
 			$e = new SmallMVCException("Model name cannot be empty", DEBUG);
 			throw $e;
@@ -15,7 +15,7 @@ class SmallMVCLoader{
 			throw $e;
 		}
 		if(method_exists($this, $modelName)){
-			$e = new SmallMVCException("Model name '{$modelName}' is an invalid name", DEBUG);
+			$e = new SmallMVCException("Model name '{$modelName}' exists in SmallMVCLoader change another name plz.", DEBUG);
 			throw $e;
 		}
 	
@@ -25,32 +25,23 @@ class SmallMVCLoader{
 			return $controller->$modelName;
 
 		$fileName = $modelName . '.php';
-		try{
-			if(!file_exists(APPDIR.DS.'model'.DS.$fileName)){
-				$aliasName = $modelName;
-				$modelName = 'SmallMVCModel';
-				$fileName = $modelName . '.php';
-				$this->includeFile($fileName);
-			}else{
-				$aliasName = $modelName;
-				$this->includeFile($fileName);
-			}
-		}catch(Exception $e){
-			$e = new SmallMVCException("Unknow file '{$fileName}'", DEBUG);
-			throw $e;
+		$table = $modelName;
+		if(!$this->includeFile($fileName)){
+			$poolName = isset(SMvc::instance(null, 'default')->config['default_pool']) ? SMvc::instance(null, 'default')->config['default_pool'] : 'default';
+			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
+			$this->includeFile($fileName);
 		}
-		$table = preg_replace("/(.*?)Model$/", "$1", $aliasName);
+		$table = preg_replace("/(.*?)Model$/", "$1", $table);
 		$refClass = new ReflectionClass($modelName);
 		try{
 			if(!is_array($params))
-				$params = array_merge($table, array($params));
-			$controller->{$aliasName} = $refClass->newInstanceArgs($params);
+				$params = array_merge(array($table), array($params));
+			$controller->{$modelName} = $refClass->newInstanceArgs($params);
 		}catch(ReflectionException $e){
 			$e->type = DEBUG;
 			throw $e;
 		}
-		$controller->{$aliasName} = new $modelName($table, $param);
-		return $controller->$aliasName;
+		return $controller->$modelName;
 	}
 	//auto create library
 	public function library($libName, $params = array()){

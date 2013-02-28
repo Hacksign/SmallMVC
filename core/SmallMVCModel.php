@@ -16,7 +16,6 @@ class SmallMVCModel{
 			$e = new SmallMVCException("Table name must be set!", DEBUG);
 			throw $e;
 		}
-		$this->table = $table;
 		$config = SMvc::instance(null, 'default')->config;
 		$charset = empty($config['default_charset']) ? 'utf-8' : $config['default_charset'];
 		if(!$poolName)
@@ -51,6 +50,12 @@ class SmallMVCModel{
 					throw $e;
 			}
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
+			try {
+				$result = $this->pdo->query("SELECT 1 FROM $table LIMIT 1");
+				$this->table = $table;//set table if it exists
+			} catch (Exception $e) {
+				//do nothing because the table doesn't exists
+			}
 		}
 	}
 
@@ -148,18 +153,19 @@ class SmallMVCModel{
 
 		return $this;
   }  
-  public function query($type=null){
+  public function query($type=null, $query = null){
     if(!isset($query))
       $query = $this->_query_assemble($params,$fetch_mode);
   
 		switch($type){
-			case 'all':
-				return $this->_query($query,$params,TMVC_SQL_ALL,$fetch_mode);
 			case 'one':
 				$this->limit(1);
 				return $this->_query($query,$params,TMVC_SQL_INIT,$fetch_mode);
-			default:
+			case 'none':
 				return $this->_query($query,$params,TMVC_SQL_NONE,$fetch_mode);
+			case 'all':
+			default:
+				return $this->_query($query,$params,TMVC_SQL_ALL,$fetch_mode);
 		}
   }  
   public function update($columns){
@@ -261,7 +267,7 @@ class SmallMVCModel{
     return $this->result->rowCount();
   }
 
-  private function from($clause){
+  public function from($clause){
     return $this->query_params['from'] = $clause;
   }  
   private function _where($clause, $args=array(), $prefix='AND'){    

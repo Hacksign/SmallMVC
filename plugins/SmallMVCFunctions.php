@@ -69,8 +69,8 @@ function create_default_directories(){
 //param2:the params pass to Model
 function M($name = null, $params = null){
 	if(empty($name)){
-		$e = new SmallMVCException("Model name is empty", DEBUG);
-		throw $e;
+			$poolName = isset(SMvc::instance(null, 'default')->config['default_pool']) ? SMvc::instance(null, 'default')->config['default_pool'] : 'default';
+			$name = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 	}
 	(preg_match("/Model$/", $name))? null : $name .= 'Model';
 
