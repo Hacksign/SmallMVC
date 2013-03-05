@@ -11,10 +11,9 @@ class SmallMVCModel{
   function __destruct(){
     $this->pdo = null;
   }
-	function __construct($table,$poolName = null){
+	function __construct($table = null,$poolName = null){
 		if(!isset($table)){
-			$e = new SmallMVCException("Table name must be set!", DEBUG);
-			throw $e;
+			$table = '';
 		}
 		$config = SMvc::instance(null, 'default')->config;
 		$charset = empty($config['default_charset']) ? 'utf-8' : $config['default_charset'];
