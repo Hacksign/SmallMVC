@@ -6,11 +6,12 @@ class SmallMVCLoader{
 	//param1:Model file name without .php ext
 	//param2:params pass to Model
 	public function model($modelName, $params = array()){
+		$modelNameEmpty = false;
 		if(empty($modelName)){
-			$e = new SmallMVCException("Model name cannot be empty", DEBUG);
-			throw $e;
+			$modelNameEmpty = true;
 		}
-		if(!preg_match('!^[a-zA-Z][a-zA-Z0-9_]+$!', $modelName)){
+		(preg_match("/Model$/", $modelName) || $modelNameEmpty)? null : $modelName .= 'Model';
+		if(!preg_match('!^[a-zA-Z][a-zA-Z0-9_]+$!', $modelName) && !$modelNameEmpty){
 			$e = new SmallMVCException("Model name '{$modelName}' is an invalid syntax", DEBUG);
 			throw $e;
 		}
@@ -36,12 +37,14 @@ class SmallMVCLoader{
 		try{
 			if(!is_array($params))
 				$params = array_merge(array($table), array($params));
-			$controller->{$modelName} = $refClass->newInstanceArgs($params);
+			$modelInstance = $refClass->newInstanceArgs($params);
 		}catch(ReflectionException $e){
 			$e->type = DEBUG;
 			throw $e;
 		}
-		return $controller->$modelName;
+		if(!empty($modelNameEmpty))
+			$controller->{$modelName} = $modelInstance;
+		return $modelInstance;
 	}
 	//auto create library
 	public function library($libName, $params = array()){

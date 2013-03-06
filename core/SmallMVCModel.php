@@ -79,6 +79,10 @@ class SmallMVCModel{
 			return true;
 		return false;
 	}
+  public function from($clause){
+		$this->query_params['from'] = $clause;
+    return $this; 
+  }  
   public function where($clause,$args){
 		if(empty($clause) || is_int($clasue)){
       $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
@@ -266,9 +270,6 @@ class SmallMVCModel{
     return $this->result->rowCount();
   }
 
-  public function from($clause){
-    return $this->query_params['from'] = $clause;
-  }  
   private function _where($clause, $args=array(), $prefix='AND'){    
     // sanity check
     if(empty($clause))

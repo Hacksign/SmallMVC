@@ -68,22 +68,12 @@ function create_default_directories(){
 //param1:the Model file name
 //param2:the params pass to Model
 function M($name = null, $params = null){
-	if(empty($name)){
-			$poolName = isset(SMvc::instance(null, 'default')->config['default_pool']) ? SMvc::instance(null, 'default')->config['default_pool'] : 'default';
-			$name = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
-	}
-	(preg_match("/Model$/", $name))? null : $name .= 'Model';
-
 	//get SMVC controller object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller')){
 		$controllerObj = SMvc::instance(null, 'controller');
-		if(isset($controllerObj->$name)){
-			return $controllerObj->$name;
-		}
-		$controllerObj->$name = $controllerObj->load->model($name, $params);
-		return $controllerObj->$name;
+		$model = $controllerObj->load->model($name, $params);
+		return $model;
 	}
-	
 	return null;
 }
 function C($name = null, $params = null){
