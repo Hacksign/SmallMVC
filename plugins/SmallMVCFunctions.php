@@ -92,6 +92,21 @@ function C($name = null, $params = null){
 
 	return $controllerObj->load->library($name, $params);
 }
+function G($key = null){
+	if(empty($key)){
+		$e = new SmallMVCException("You should declare one key from config variable", DEBUG);
+		throw $e;
+	}
+	//get config
+	if(SMvc::instance(null, 'default')){
+		$config = SMvc::instance(null, 'default')->config[$key];
+		if(isset($config)) return $config;
+		else return null;
+	}else{
+		$e = new SmallMVCException("Default controller doesnt set, can not get config", DEBUG);
+		throw $e;
+	}
+}
 function redirect($url, $time=0, $msg='') {
     if (empty($msg))
         $msg = "<table style='text-align:center;height:100%;width:100%;'><tr><td>System will redirect to {$url} in {$time} second(s).</td></tr></table>";
