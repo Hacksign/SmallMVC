@@ -94,7 +94,9 @@ class SmallMVCModel{
 		if(is_string($clause))
 			$clause = array($clause);
 		foreach($clause as &$each){
-			if(!preg_match('![=<>]!',$each))
+			if(preg_match('/\w*\bis\b(\s*(not)){0,1}/',$each))
+				$each = ' '.$each.' ';
+			else if(!preg_match('/[=<>]/',$each))
 			 $each .= ' = ';  
 		
 			if(strpos($each,'?')===false)
