@@ -28,9 +28,13 @@ class SmallMVCExceptionHandler extends Exception{
 				case DEBUG:
 					$backtrace = $e->getTrace();
 					for($i = 0; $i < count($backtrace); $i++){
-						if(!empty($backtrace[$i + 1]))
+						if(!empty($backtrace[$i + 1])){
 							$backtrace[$i]['function'] = $backtrace[$i + 1]['function'];
-						else
+							if(empty($backtrace[$i]['file']))
+								$backtrace[$i]['file'] = $backtrace[$i + 1]['file'];
+							if(empty($backtrace[$i]['line']))
+								$backtrace[$i]['line'] = $backtrace[$i + 1]['line'];
+						}else
 							$backtrace[$i]['function'] = 'Entry';
 					}
 					$controller->assign('backtrace', $backtrace);

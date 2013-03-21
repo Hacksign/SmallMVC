@@ -17,5 +17,5 @@ $config['autoloads']['libraries'] = array();
 $config['autoloads']['scripts'] = array('SmallMVCFunctions', 'SmallMVCModel');
 //$config['autoloads']['models'] = array('SmallMVCModel');
 
-$config['default_charset'] = 'utf-8';
+$config['default_charset'] = 'utf8';
 ?>
