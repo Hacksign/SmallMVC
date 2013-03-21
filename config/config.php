@@ -13,8 +13,8 @@ $config['error_handler_class'] = 'SmallMVCErrorHandler';
 $config['debug'] = false;
 
 //auto loads
+$config['autoloads']['scripts'] = array($config['default_controller'], 'SmallMVCFunctions', 'SmallMVCModel');
 $config['autoloads']['libraries'] = array();
-$config['autoloads']['scripts'] = array('SmallMVCFunctions', 'SmallMVCModel');
 //$config['autoloads']['models'] = array('SmallMVCModel');
 
 $config['default_charset'] = 'utf8';

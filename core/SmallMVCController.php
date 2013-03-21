@@ -11,6 +11,10 @@ class SmallMVCController{
 		$this->load = SMvc::instance(null, 'loader');
 		$this->load->script($viewerName);
 		$this->viewReflection = new ReflectionClass($viewerName);
+		if(empty($this->viewReflection)){
+			$e = new SmallMVCException("viewer:{$viewerName} create failed", DEBUG);
+			throw $e;
+		}
 		$this->view = $this->viewReflection->newInstanceArgs($this->config['default_viewer_args']);
 	}
 	function __call($name, $args = null){

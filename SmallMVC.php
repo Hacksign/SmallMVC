@@ -77,10 +77,9 @@ set_include_path(
 				require_once(APPDIR . DS . 'config'. DS .'config.php');	
 			}
 			$this->config = $config;
-			$this->loadCoreFiles();
+			$this->setupAutoloaders();
 			$this->setupUrlSegments();
 			$this->setupController();
-			$this->setupAutoloaders();
 			$this->controller->{$this->urlSegments[2]}();
 		}else{
 			throw new Exception("SmallMVCLoader can't be loaded");
@@ -99,9 +98,6 @@ set_include_path(
 				exit(0);
 			}
 		}
-	}
-	private function loadCoreFiles(){
-		$this->loader->script('SmallMVCController');
 	}
 	private function setupUrlSegments(){
 		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->config['default_controller'].'/'.$this->config['default_action'];
@@ -133,22 +129,22 @@ set_include_path(
 	private function setupAutoloaders(){
 		if(!empty($this->config['autoloads']['scripts'])){
 		  foreach($this->config['autoloads']['scripts'] as $script)
-				$this->controller->load->script($script);
+				$this->loader->script($script);
 		}
 		if(!empty($this->config['autoloads']['models'])){
 			foreach($this->config['autoloads']['models'] as $modName => $params){
 				if(!empty($params) && is_array($params)){
-					$this->controller->load->model($modName,$params);
+					$this->loader->model($modName,$params);
 				}else if(is_int($modName))
-					$this->controller->load->model($params);
+					$this->loader->model($params);
 			}//end foreach
 		}//end if($models)
 		if(!empty($this->config['autoloads']['libraries'])){
 			foreach($this->config['autoloads']['libraries'] as $libName => $params){
 				if(!empty($params) && is_array($params)){
-					$lib = $this->controller->load->library($libName,$params);
+					$lib = $this->loader->library($libName,$params);
 				}else if(is_int($libName))
-					$lib = $this->controller->load->library($params);
+					$lib = $this->loader->library($params);
 
 				if($lib)
 					SMvc::instance($lib, $library[0]);

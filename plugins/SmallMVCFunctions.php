@@ -68,10 +68,10 @@ function create_default_directories(){
 //param1:the Model file name
 //param2:the params pass to Model
 function M($name = null, $params = null){
-	//get SMVC controller object
-	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller')){
-		$controllerObj = SMvc::instance(null, 'controller');
-		$model = $controllerObj->load->model($name, $params);
+	//get SMVC loader object
+	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
+		$load = SMvc::instance(null, 'loader');
+		$model = $load->model($name, $params);
 		return $model;
 	}
 	return null;
@@ -85,12 +85,11 @@ function C($name = null, $params = null){
 	//get SMVC controller object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller')){
 		$controllerObj = SMvc::instance(null, 'controller');
-		if(isset($controllerObj->$name)){
-			return $controllerObj->$name;
-		}
+		return $controllerObj->$name;
+	}else if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
+		$load = SMvc::instance(null, 'loader');
+		return $load->library($name, $params);
 	}
-
-	return $controllerObj->load->library($name, $params);
 }
 function G($key = null){
 	if(empty($key)){
@@ -134,11 +133,11 @@ function import($name = null){
 		$e = new SmallMVCException("import name is empty", DEBUG);
 		throw $e;
 	}
-	//get SMVC controller object
-	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller'))
-		$controllerObj = SMvc::instance(null, 'controller');
-	if($controllerObj)
-		return $controllerObj->load->script($name);
+	//get SMVC Loader
+	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader'))
+		$load = SMvc::instance(null, 'loader');
+	if($load)
+		return $load->script($name);
 	else
 		return false;
 }
