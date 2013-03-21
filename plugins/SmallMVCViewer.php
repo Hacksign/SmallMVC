@@ -1,9 +1,11 @@
 <?php
 class SmallMVCViewer{
 	var $viewVars = array();
-	function __construct(){
-	}
 	public function assign($key, $value = null){
+		if(empty($key)){
+			$e = new SmallMVCException("key must be set", DEBUG);
+			throw $e;
+		}
 		if(isset($value))
 			$this->viewVars[$key] = $value;
 		else
@@ -17,7 +19,6 @@ class SmallMVCViewer{
 		if(empty($fileName)) {
 			$e = new SmallMVCException("\$fileName must be set", DEBUG);
 			throw $e;
-			return;
 		}else{
 			if(!preg_match('/\.html$/', $fileName))
 				$fileName .= '.html';
@@ -32,24 +33,13 @@ class SmallMVCViewer{
 		if(!file_exists($fileName)){
 			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
 			throw $e;
-			return;
 		}
 		return $this->_view($fileName, $viewVars);
 	}
-	/*
-	public function fetch($fileName, $viewVars = null){
-		ob_start();
-		$this->display($fileName, $viewVars);
-		$results = ob_get_contents();
-		ob_end_clean();
-		return $results;
-	}
-	 */
 	public function layout($template = null, $layout = null){
 		if(empty($template)) {
 			$e = new SmallMVCException("\$template must be set", DEBUG);
 			throw $e;
-			return;
 		}else{
 			if(!preg_match('/\.html$/', $template))
 				$template .= '.html';
@@ -58,7 +48,6 @@ class SmallMVCViewer{
 		if(!file_exists($template)){
 			$e = new SmallMVCException("template:$template", PAGE_NOT_FOUND);
 			throw $e;
-			return;
 		}
 		if($layout){
 			if(!preg_match('/\.html$/', $layout))
@@ -68,7 +57,6 @@ class SmallMVCViewer{
 		if(!file_exists($layout)){
 			$e = new SmallMVCException("layout:$layout", PAGE_NOT_FOUND);
 			throw $e;
-			return;
 		}
 		if(preg_match('/^{__LAYOUT__}/', file_get_contents($layout, LOCK_EX))){
 			$content = file_get_contents($template, LOCK_EX);

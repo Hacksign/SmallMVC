@@ -17,7 +17,7 @@ class SmallMVCController{
 		}
 		$this->view = $this->viewReflection->newInstanceArgs($this->config['default_viewer_args']);
 	}
-	function __call($name, $args = null){
+	protected function __call($name, $args = null){
 		try{
 			//parse viewer method first to prevent dead loop
 			if(($rMethod = $this->viewReflection->getMethod($name))){
