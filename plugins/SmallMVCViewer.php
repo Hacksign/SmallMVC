@@ -1,6 +1,7 @@
 <?php
 class SmallMVCViewer{
 	var $viewVars = array();
+	function __construct(){}//this line must be keep!
 	public function assign($key, $value = null){
 		if(empty($key)){
 			$e = new SmallMVCException("key must be set", DEBUG);
