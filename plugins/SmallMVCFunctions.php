@@ -85,11 +85,15 @@ function C($name = null, $params = null){
 	//get SMVC controller object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller')){
 		$controllerObj = SMvc::instance(null, 'controller');
-		return $controllerObj->$name;
-	}else if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
+		if($controllerObj->$name)
+			return $controllerObj->$name;
+	}
+	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
 		return $load->library($name, $params);
 	}
+	$e = new SmallMVCException("Controller Object doesn't exists", DEBUG);
+	throw $e;
 }
 function G($key = null){
 	if(empty($key)){
