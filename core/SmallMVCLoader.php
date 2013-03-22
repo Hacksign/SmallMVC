@@ -30,9 +30,10 @@ class SmallMVCLoader{
 
 		$fileName = $modelName . '.php';
 		if(!$this->includeFile($fileName)){
-			if(is_array($params) && !empty($params[0]))
-				$poolName = $params[0];
-			else
+			if(is_array($params)){
+				if(!empty($params[0])) $poolName = $params[0];
+				else{$e = new SmallMVCException("There must be at least one element in params", DEBUG); throw $e;}
+			}else
 				$poolName = !empty($params) && is_string($params) ? $params : 'database';
 			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 			$fileName = $modelName.'.php';
