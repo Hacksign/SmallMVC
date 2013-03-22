@@ -16,9 +16,9 @@ class SmallMVCModel{
 			$table = '';
 		}
 		$config = SMvc::instance(null, 'default')->config;
-		$charset = empty($config['default_charset']) ? 'utf-8' : $config['default_charset'];
+		$charset = empty($config['charset']) ? 'utf8' : $config['charset'];
 		if(!$poolName)
-			$poolName = isset($config['default_pool']) ? $config['default_pool'] : 'default';
+			$poolName = 'database';
 		if($poolName && isset(SMvc::instance(null, 'default')->dbs[$poolName])){
 			return SMvc::instance(null, 'default')->dbs[$poolName];
 		}
@@ -32,7 +32,7 @@ class SmallMVCModel{
 			 throw $e;
 			}
 			if(empty($config[$poolName]['charset']))
-				$config[$poolName]['charset'] = $config['default_charset'];
+				$config[$poolName]['charset'] = $config['charset'];
 
 			$this->dbname = $config[$poolName]['name'];
 			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']};charset={$charset}";
@@ -324,7 +324,7 @@ class SmallMVCModel{
   private function _query_assemble(&$params,$fetch_mode=null){
     if(empty($this->query_params['from'])){
 			if(empty($this->table)){
-				$e = new SmallMVCException("Unable to get(), set from() first", DEBUG);
+				$e = new SmallMVCException("Table is not exists in this database or table empty(use ->from(\$table) to set one)", DEBUG);
 				throw $e;
 				return false;
 			}

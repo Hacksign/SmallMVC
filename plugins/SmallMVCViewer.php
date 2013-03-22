@@ -106,7 +106,7 @@ class SmallMVCViewer{
 			$org_include_path = get_include_path();
 			set_include_path(APP_INCLUDE_PATH . PS . $org_include_path);
 			if(!headers_sent()){
-				$charset = SMvc::instance(null, 'default')->config['default_charset'];
+				$charset = SMvc::instance(null, 'default')->config['charset'];
 				header("content-Type: text/html; charset={$charset}");
         header("Cache-control: private");
 				header("X-Powered-By:SmallMVC/".SMVC_VERSION);

@@ -1,26 +1,25 @@
 <?php
 class SmallMVCController{
-	public $load;
-	private $viewReflection;
+	private $load;
 	private $view;
 	private $config;
 
 	function __construct(){
 		$this->config = SMvc::instance(null,'default')->config; 
-		$viewerName = $this->config['default_viewer'];
-		$this->load = SMvc::instance(null, 'loader');
-		$this->load->script($viewerName);
-		$this->viewReflection = new ReflectionClass($viewerName);
-		if(empty($this->viewReflection)){
-			$e = new SmallMVCException("viewer:{$viewerName} create failed", DEBUG);
+		if(!empty($this->config['system']['viewer'][0])) $viewerName = $this->config['system']['viewer'][0];
+		else{
+			$e = new SmallMVCException("\$config['system']['viewer'] must be set! read manual for help!", DEBUG);
 			throw $e;
 		}
-		$this->view = $this->viewReflection->newInstanceArgs($this->config['default_viewer_args']);
+		if(empty($this->config['system']['viewer'][1])) $this->config['system']['viewer'][1] = array();
+		$this->load = SMvc::instance(null, 'loader');
+		$this->view = $this->load->library($this->config['system']['viewer'][0], $this->config['system']['viewer'][1]);
 	}
 	protected function __call($name, $args = null){
 		try{
 			//parse viewer method first to prevent dead loop
-			if(($rMethod = $this->viewReflection->getMethod($name))){
+			$refClass = new ReflectionClass($this->view);
+			if(($rMethod = $refClass->getMethod($name))){
 				empty($args) ? $rMethod->invoke($this->view) : $rMethod->invokeArgs($this->view, $args);
 			}else{
 				$e = new SmallMVCException("can not find method:$name", DEBUG);
@@ -28,8 +27,8 @@ class SmallMVCController{
 			}
 		}catch(ReflectionException $e){
 			//parse controller method, for short name of url address
-			if(get_class(SMvc::instance(null,'controller')) === $this->config['default_controller']){
-				$controller = $this->load->library($this->config['routing']['default_controller']);
+			if(get_class(SMvc::instance(null,'controller')) === $this->config['system']['controller']){
+				$controller = $this->load->library($this->config['routing']['controller']);
 				SMvc::instance($controller, 'controller');
 			}else{
 				$controller = SMvc::instance(null,'controller');
@@ -49,13 +48,6 @@ class SmallMVCController{
 			redirect($url, $time, $msg);
 		else
 			redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
-	}
-	protected function getInstance($instName = null){
-		if(empty($instName)){
-				$e = new SmallMVCException("Instance Name is required", DEBUG);
-				throw $e;
-		}
-		return SMvc::instance(null, $instName);
 	}
 }
 ?>

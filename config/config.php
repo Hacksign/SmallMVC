@@ -1,21 +1,20 @@
 <?php
 $config['routing']['search'] =  array();
 $config['routing']['replace'] = array();
-$config['routing']['default_controller'] = 'IndexController';
-$config['routing']['default_action'] = 'index';
+$config['routing']['controller'] = 'IndexController';
+$config['routing']['action'] = 'index';
  
-$config['default_controller'] = 'SmallMVCController';
-$config['default_action'] = 'index';
-$config['default_viewer'] = 'SmallMVCViewer';
-$config['default_viewer_args'] = array();
-
-$config['error_handler_class'] = 'SmallMVCErrorHandler';
-$config['debug'] = false;
+$config['system']['loader'] = 'SmallMVCLoader';
+$config['system']['controller'] = 'SmallMVCController';
+$config['system']['action'] = 'index';
+$config['system']['model'] = 'SmallMVCModel';
+$config['system']['viewer'] = array('SmallMVCViewer',array('sfsdfs'));
+$config['system']['error'] = array('file' => 'SmallMVCErrorHandler', 'class' => array('SmallMVCExceptionHandler','handleException'), 'function' => 'SmallMVCErrorHandler', 'shutdown' => 'SmallMVCShutdownFunction');
 
 //auto loads
-$config['autoloads']['scripts'] = array($config['default_controller'], 'SmallMVCFunctions', 'SmallMVCModel');
+$config['autoloads']['scripts'] = array($config['system']['controller'], 'SmallMVCFunctions', $config['system']['model']);
 $config['autoloads']['libraries'] = array();
 //$config['autoloads']['models'] = array('SmallMVCModel');
 
-$config['default_charset'] = 'utf8';
+$config['charset'] = 'utf8';
 ?>

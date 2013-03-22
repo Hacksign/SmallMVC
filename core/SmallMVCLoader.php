@@ -9,9 +9,12 @@ class SmallMVCLoader{
 		$modelNameEmpty = false;
 		if(empty($modelName)){
 			$modelNameEmpty = true;
+		}else{
+			$table = $modelName;
+			$table = preg_replace("/(.*?)Model$/", "$1", $table);
 		}
 		(preg_match("/Model$/", $modelName) || $modelNameEmpty)? null : $modelName .= 'Model';
-		if(!preg_match('!^[a-zA-Z][a-zA-Z0-9_]+$!', $modelName) && !$modelNameEmpty){
+		if(!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_]+$/', $modelName) && !$modelNameEmpty){
 			$e = new SmallMVCException("Model name '{$modelName}' is an invalid syntax", DEBUG);
 			throw $e;
 		}
@@ -26,23 +29,25 @@ class SmallMVCLoader{
 			return $controller->$modelName;
 
 		$fileName = $modelName . '.php';
-		$table = $modelName;
 		if(!$this->includeFile($fileName)){
-			$poolName = isset(SMvc::instance(null, 'default')->config['default_pool']) ? SMvc::instance(null, 'default')->config['default_pool'] : 'default';
+			if(is_array($params) && !empty($params[0]))
+				$poolName = $params[0];
+			else
+				$poolName = !empty($params) && is_string($params) ? $params : 'database';
 			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
+			$fileName = $modelName.'.php';
 			$this->includeFile($fileName);
 		}
-		$table = preg_replace("/(.*?)Model$/", "$1", $table);
 		$refClass = new ReflectionClass($modelName);
 		try{
-			if(!is_array($params))
-				$params = array_merge(array($table), array($params));
+			if(empty($params)) $params = array($table);
+			else if(!is_array($params)) $params = array_merge(array($table), array($params));
 			$modelInstance = $refClass->newInstanceArgs($params);
 		}catch(ReflectionException $e){
 			$e->type = DEBUG;
 			throw $e;
 		}
-		if(!empty($modelNameEmpty))
+		if(!$modelNameEmpty)//store model if it is a exists model
 			$controller->{$modelName} = $modelInstance;
 		return $modelInstance;
 	}
@@ -61,17 +66,21 @@ class SmallMVCLoader{
 			$e = new SmallMVCException("Library name '{$alias}' is an invalid name", DEBUG);
 			throw $e;
 		}
-		$this->includeFile($libName);
-		if(preg_match('/^@\./', $libName)){
-			$libName = preg_replace('/^@\.(.*)/', '$1', $libName);
-		}
-		$refClass = new ReflectionClass($libName);
-		try{
-			if(!is_array($params))
-				$params = array($params);
-			return $refClass->newInstanceArgs($params);
-		}catch(ReflectionException $e){
-			$e->type = DEBUG;
+		if($this->includeFile($libName)){
+			if(preg_match('/^@\./', $libName)){
+				$libName = preg_replace('/^@\.(.*)/', '$1', $libName);
+			}
+			$refClass = new ReflectionClass($libName);
+			try{
+				if(!is_array($params))
+					$params = array($params);
+				return $refClass->newInstanceArgs($params);
+			}catch(ReflectionException $e){
+				$e->type = DEBUG;
+				throw $e;
+			}
+		}else{
+			$e = new SmallMVCException("Library:'{$libName}' not found!", DEBUG);
 			throw $e;
 		}
 	}
