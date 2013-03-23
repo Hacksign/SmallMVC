@@ -54,7 +54,8 @@ set_include_path(
 	function __destruct(){
 		self::$scriptExecComplete = true;
 		if(isset($_SESSION)){
-			session_destroy();
+			if(count($_SESSION) === 1 && !empty($_SESSION['__prevent_template_view_directly_']))
+				session_destroy();
 		}
 	}
 
@@ -104,7 +105,7 @@ set_include_path(
 		}
 	}
 	private function setupUrlSegments(){
-		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->config['system']['controller'].'/'.$this->config['system']['action'];
+		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->config['system']['controller'].'/'.(!empty($this->config['routing']['action']) ? $this->config['routing']['action'] : $this->config['system']['action']);
 		$this->urlSegments = explode('/', $url);
 		if(!empty($this->urlSegments)){
 			if(isset($this->urlSegments[0])){

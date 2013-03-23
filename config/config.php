@@ -6,7 +6,7 @@ $config['routing']['action'] = 'index';
  
 $config['system']['loader'] = 'SmallMVCLoader';
 $config['system']['controller'] = 'SmallMVCController';
-$config['system']['action'] = 'index';
+$config['system']['action'] = $config['routing']['action'];
 $config['system']['model'] = 'SmallMVCModel';
 $config['system']['viewer'] = array('SmallMVCViewer',array('sfsdfs'));
 $config['system']['error'] = array('file' => 'SmallMVCErrorHandler', 'class' => array('SmallMVCExceptionHandler','handleException'), 'function' => 'SmallMVCErrorHandler', 'shutdown' => 'SmallMVCShutdownFunction');
