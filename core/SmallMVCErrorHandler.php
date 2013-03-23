@@ -58,6 +58,9 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 }
 function SmallMVCShutdownFunction(){
 	$controller = SMvc::instance(null, 'controller');
+	if(empty($controller)){
+		$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
+	}
 	$e = error_get_last();
 	if($e && SMvc::instance(null,'default')->config['debug']){
 		$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>

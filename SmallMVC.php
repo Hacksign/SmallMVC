@@ -73,13 +73,13 @@ set_include_path(
 			require_once(APPDIR . DS . 'config'. DS .'config.php');	
 		}
 		$this->config = $config;
-		$this->setupErrorHandling();
 		if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['loader']))
 			$this->config['system']['loader'] .= '.php';
 		if(file_exists(SMVC_COREDIR . DS . $this->config['system']['loader'])){
 			require_once($this->config['system']['loader']);
 			$this->load = new SmallMVCLoader;
 			Smvc::instance($this->load, 'loader');
+			$this->setupErrorHandling();
 			$this->setupAutoloaders();
 			$this->setupUrlSegments();
 			$this->setupController();
