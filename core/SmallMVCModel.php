@@ -161,8 +161,9 @@ class SmallMVCModel{
 		return $this;
   }  
   public function query($type=null, $query = null){
-    if(!isset($query))
+		if(!isset($query)){
       $query = $this->_query_assemble($params,$fetch_mode);
+		}
   
 		switch($type){
 			case 'one':
@@ -201,10 +202,7 @@ class SmallMVCModel{
       $params = array_merge($params,$where_params);
     }
 
-    $query = implode(' ',$query);
-    
     $this->query_params = array('select' => '*');
-    
     return $this->_query($query,$params);
   }
 
@@ -231,9 +229,6 @@ class SmallMVCModel{
       }
     }
     $query[] = '(' . implode(',',$fields) . ')';
-    
-    $query = implode(' ',$query);
-    
     $this->_query($query,$params);
     return $this->last_insert_id();
   }
@@ -248,10 +243,7 @@ class SmallMVCModel{
       $params = array_merge($params,$where_params);
     }
 
-    $query = implode(' ',$query);
-    
 		$this->query_params = !empty($this->query_params) ? array_merge(array('select' => '*'),$this->query_params) : array('select' => '*');
-    
     return $this->_query($query,$params);
   }
   public function next($fetch_mode=null)
@@ -330,7 +322,6 @@ class SmallMVCModel{
 			}
 			$this->query_params['from'] = $this->table;
     }
-		array_walk_recursive($this->query_params, array($this,'filter_query_params'));
     $query = array();
     $query[] = "SELECT {$this->query_params['select']}";
     $query[] = "FROM `{$this->query_params['from']}`";
@@ -351,17 +342,17 @@ class SmallMVCModel{
     // assemble LIMIT clause
     if(!empty($this->query_params['limit']))
       $query[] = "LIMIT {$this->query_params['limit']['clause']}";
-    $query_string = implode(' ',$query);
 		//re-construct a new query_params
     $this->query_params = array('select' => '*');
     
-    return $query_string;
+    return $query;
   }
 	//make where condition string like this and stored in variable:
 	//	WHERE xx [=<>] ? AND|OR oo [=<>] ? => $where
 	//	array(xx_condition, oo_condition) => $params
   private function _assemble_where(&$where,&$params){
     if(!empty($this->query_params['where'])){
+			array_walk_recursive($this->query_params['where'], array($this,'filter_query_params'));
       $where_parts = array();
       empty($params) ? $params = array() : null;
 			//$query_params['where'] = array( 0 => array('clause' => 'array('id = ', 'md5 = ')', 'args' => array(), 'prefix' = 'AND'), ...);
@@ -374,6 +365,10 @@ class SmallMVCModel{
     return false;
   }  
   private function _query($query,$params=null,$return_type = TMVC_SQL_NONE,$fetch_mode=null){
+		foreach($query as $each)
+			preg_match('/^WHERE\s{1}/', $each) ? null : array_walk_recursive($each, array($this,'filter_query_params'));
+		empty($params)? null : array_walk_recursive($params, array($this,'filter_query_params'));
+    $query = implode(' ',$query);
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
       $fetch_mode = PDO::FETCH_ASSOC;  
@@ -419,7 +414,6 @@ class SmallMVCModel{
   }
 	private function filter_query_params($item, $key){
 		$regexs = array(
-			'\'',
 			'(and|or)\\b.+?(>|<|=|in|like)',
 			'\\/\\*.+?\\*\\/',
 			'<\\s*script\\b',
@@ -435,7 +429,6 @@ class SmallMVCModel{
 			if(preg_match("/{$regex}/is", $item)){
 				$e = new SmallMVCException("SQL Injection Detected", DEBUG);
 				throw $e;
-				exit();
 			}
 		}
 	}
