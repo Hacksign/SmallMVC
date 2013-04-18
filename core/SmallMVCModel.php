@@ -367,7 +367,6 @@ class SmallMVCModel{
   private function _query($query,$params=null,$return_type = TMVC_SQL_NONE,$fetch_mode=null){
 		foreach($query as $each)
 			preg_match('/^WHERE\s{1}/', $each) ? null : array_walk_recursive($each, array($this,'filter_query_params'));
-		empty($params)? null : array_walk_recursive($params, array($this,'filter_query_params'));
     $query = implode(' ',$query);
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
