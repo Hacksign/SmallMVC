@@ -246,23 +246,14 @@ class SmallMVCModel{
 		$this->query_params = !empty($this->query_params) ? array_merge(array('select' => '*'),$this->query_params) : array('select' => '*');
     return $this->_query($query,$params);
   }
-  public function next($fetch_mode=null)
-  {
-    if(isset($fetch_mode))
-      $this->result->setFetchMode($fetch_mode);
-    return $this->result->fetch();
-  }
-  public function last_insert_id()
-  {
+  public function lastId(){
     return $this->pdo->lastInsertId();
   }
 
-  public function num_rows()
-  {
+  public function numRows(){
     return $this->result->rowCount();
   }
-  public function affected_rows()
-  {
+  public function affectedRows(){
     return $this->result->rowCount();
   }
 
