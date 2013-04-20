@@ -59,6 +59,7 @@ class SmallMVCModel{
 	}
 
 	public function getQueryString(){
+		dump($this->query_params);
 		$tmp = $this->query_params;
     $query = $this->_query_assemble($params,$fetch_mode);
 		$query = explode('?', $query);
@@ -230,7 +231,7 @@ class SmallMVCModel{
     }
     $query[] = '(' . implode(',',$fields) . ')';
     $this->_query($query,$params);
-    return $this->last_insert_id();
+    return $this->lastId();
   }
   public function delete(){
     $query = array("DELETE FROM `{$this->table}`");
