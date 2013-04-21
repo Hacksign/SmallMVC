@@ -59,7 +59,6 @@ class SmallMVCModel{
 	}
 
 	public function getQueryString(){
-		dump($this->query_params);
 		$tmp = $this->query_params;
     $query = $this->_query_assemble($params,$fetch_mode);
 		$query = explode('?', $query);
@@ -357,8 +356,9 @@ class SmallMVCModel{
     return false;
   }  
   private function _query($query,$params=null,$return_type = TMVC_SQL_NONE,$fetch_mode=null){
-		foreach($query as $each)
+		foreach($query as $each){
 			preg_match('/^WHERE\s{1}/', $each) ? null : array_walk_recursive($each, array($this,'filter_query_params'));
+		}
     $query = implode(' ',$query);
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
