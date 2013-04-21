@@ -20,7 +20,7 @@ class SmallMVCController{
 			//parse viewer method first to prevent dead loop
 			$refClass = new ReflectionClass($this->view);
 			if(($rMethod = $refClass->getMethod($name))){
-				empty($args) ? $rMethod->invoke($this->view) : $rMethod->invokeArgs($this->view, $args);
+				if(empty($args)) return $rMethod->invoke($this->view); else return $rMethod->invokeArgs($this->view, $args);
 			}else{
 				$e = new SmallMVCException("can not find method:$name", DEBUG);
 				throw $e;
@@ -35,8 +35,7 @@ class SmallMVCController{
 			}
 			foreach(get_class_methods($controller) as $actionName){
 				if(strcasecmp($actionName, $name) === 0){
-					$controller->{$actionName}();
-					return true;
+					return $controller->{$actionName}();
 				}
 			}//end foreach
 			$e = new SmallMVCException("action:{$name} dosen't exists in controller", DEBUG);

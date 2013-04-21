@@ -16,7 +16,7 @@ class SmallMVCViewer{
 				else
 					$this->viewVars[$k] = $v;
 	}
-	public function display($fileName = null, $viewVars = null){
+	public function display($fileName = null, $getStaticHtml = false){
 		if(empty($fileName)) {
 			$e = new SmallMVCException("\$fileName must be set", DEBUG);
 			throw $e;
@@ -35,9 +35,9 @@ class SmallMVCViewer{
 			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
 			throw $e;
 		}
-		return $this->_view($fileName, $viewVars);
+		return $this->_view($fileName, $getStaticHtml);
 	}
-	public function layout($template = null, $layout = null){
+	public function layout($template = null, $layout = null, $getStaticHtml = false){
 		if(empty($template)) {
 			$e = new SmallMVCException("\$template must be set", DEBUG);
 			throw $e;
@@ -76,8 +76,7 @@ class SmallMVCViewer{
 			$cacheFile = APPDIR . DS . 'cache' . DS . md5($template) . '.php';
 			if (is_file($cacheFile) && !( (filemtime($template) > filemtime($cacheFile)) || (filemtime($layoutName) > filemtime($cacheFile))) ) {//判断缓存是否有效
 				 extract($this->viewVars, EXTR_OVERWRITE);
-				 $this->_view($cacheFile);
-				 return;
+				 return $this->_view($cacheFile, $getStaticHtml);
 			}
 			$content = preg_replace("/{__CONTENT__}/s", $content, $layout);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
@@ -85,13 +84,13 @@ class SmallMVCViewer{
 				throw $e;
 			}
 			extract($this->viewVars, EXTR_OVERWRITE);
-		  $this->_view($cacheFile);
+		  return $this->_view($cacheFile, $getStaticHtml);
 		}else{
 			$e = new SmallMVCException("Not a layout file:$layout", DEBUG);
 			throw $e;
 		}
 	}
-	private function _view($fileName, $viewVars = null){	
+	private function _view($fileName, $getStaticHtml = false){	
 		if(empty($fileName)){
 			$fileName = 'index.html';
 		}
@@ -100,8 +99,6 @@ class SmallMVCViewer{
 		}
 		$this->assign_sys_var();
 		extract($this->viewVars);
-		if(isset($viewVars))
-			extract($viewVars);
 		try{
 			$org_include_path = get_include_path();
 			set_include_path(APP_INCLUDE_PATH . PS . $org_include_path);
@@ -122,8 +119,14 @@ class SmallMVCViewer{
 					throw $e;
 				}
 			}
+			ob_start();
 			require_once($fileName);
+			$content = ob_get_contents();
+			ob_end_clean();
 			set_include_path($org_include_path);
+			if($getStaticHtml){
+				return $content;
+			}else{ echo $content;return null; };
 		}catch(Exception $e){
 			$e->type = DEBUG;
 			throw $e;
