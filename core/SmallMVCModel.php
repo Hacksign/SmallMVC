@@ -224,7 +224,8 @@ class SmallMVCModel{
     
     $column_names = array_keys($columns);
     
-    $query = array(sprintf("INSERT INTO `{$this->table}` (`%s`) VALUES",implode('`,`',$column_names)));
+		$query[] = 'INSERT INTO ';
+    $query[] = sprintf("`{$this->table}` (`%s`) VALUES",implode('`,`',$column_names));
     $fields = array();
     $params = array();
     foreach($columns as $cname => $cvalue)
@@ -365,7 +366,7 @@ class SmallMVCModel{
   private function _query($query,$params=null,$return_type = SMVC_SQL_NONE,$fetch_mode=null){
 		$checkArray = array();
 		foreach($query as $each){
-			preg_match('/^WHERE\s{1}/', $each) ? null : array_push($checkArray, $each);
+			preg_match('/^WHERE\s+/', $each) ? null : array_push($checkArray, $each);
 		}
 		array_walk_recursive($checkArray, array($this,'filter_query_params'));
     $query = implode(' ',$query);
