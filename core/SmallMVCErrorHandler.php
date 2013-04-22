@@ -26,6 +26,7 @@ class SmallMVCExceptionHandler extends Exception{
 					$controller->display('#.message');
 					break;
 				case DEBUG:
+				default:
 					$backtrace = $e->getTrace();
 					for($i = 0; $i < count($backtrace); $i++){
 						if(!empty($backtrace[$i + 1])){
@@ -54,6 +55,47 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 		return;
 	}
 	if(error_reporting() & $errno){
+		switch($errno){
+			case E_ERROR:
+				$controller = SMvc::instance(null, 'controller');
+				if(empty($controller)){
+					$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
+				}
+				if(SMvc::instance(null,'default')->config['debug']){
+					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
+								<b>Message:</b> {$errstr}<br />
+								<b>File:</b> {$errfile}<br />
+								<b>Line:</b> {$errline}
+								</span>";
+				}
+				if(!SMvc::$scriptExecComplete){
+					$controller->assign('info', $message);
+					$controller->display('#.message');
+				}
+				break;
+			case E_WARNING:
+				break;
+			case E_PARSE:
+				break;
+			case E_NOTICE:
+				break;
+			case E_CORE_ERROR:
+				break;
+			case E_CORE_WARNING:
+				break;
+			case E_COMPILE_ERROR:
+				break;
+			case E_USER_ERROR:
+				break;
+			case E_USER_WARNING:
+				break;
+			case E_USER_NOTICE:
+				break;
+			case E_STRICT:
+				break;
+			case E_ALL:
+				break;
+		}
 	}
 }
 function SmallMVCShutdownFunction(){

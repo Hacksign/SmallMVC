@@ -1,4 +1,11 @@
 <?php
+if(!defined('SMVC_SQL_NONE'))
+	  define('SMVC_SQL_NONE', 0);
+if(!defined('SMVC_SQL_INIT'))
+	  define('SMVC_SQL_INIT', 1);
+if(!defined('SMVC_SQL_ALL'))
+	  define('SMVC_SQL_ALL', 2);
+
 class SmallMVCModel{
 	private $db = null;
 	private $table = null;
@@ -85,8 +92,8 @@ class SmallMVCModel{
 		$this->query_params['from'] = $clause;
     return $this; 
   }  
-  public function where($clause,$args){
-		if(empty($clause) || is_int($clasue)){
+  public function where($clause = null,$args = null){
+		if(empty($clause) || is_int($clause)){
       $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
 			throw $e;
 		}
@@ -160,7 +167,7 @@ class SmallMVCModel{
 
 		return $this;
   }  
-  public function query($type=null, $query = null){
+  public function query($type=null, $query = null, $fetch_mode = null){
 		if(!isset($query)){
       $query = $this->_query_assemble($params,$fetch_mode);
 		}
@@ -168,12 +175,12 @@ class SmallMVCModel{
 		switch($type){
 			case 'one':
 				$this->limit(1);
-				return $this->_query($query,$params,TMVC_SQL_INIT,$fetch_mode);
+				return $this->_query($query,$params,SMVC_SQL_INIT,$fetch_mode);
 			case 'none':
-				return $this->_query($query,$params,TMVC_SQL_NONE,$fetch_mode);
+				return $this->_query($query,$params,SMVC_SQL_NONE,$fetch_mode);
 			case 'all':
 			default:
-				return $this->_query($query,$params,TMVC_SQL_ALL,$fetch_mode);
+				return $this->_query($query,$params,SMVC_SQL_ALL,$fetch_mode);
 		}
   }  
   public function update($columns){
@@ -355,10 +362,12 @@ class SmallMVCModel{
     }
     return false;
   }  
-  private function _query($query,$params=null,$return_type = TMVC_SQL_NONE,$fetch_mode=null){
+  private function _query($query,$params=null,$return_type = SMVC_SQL_NONE,$fetch_mode=null){
+		$checkArray = array();
 		foreach($query as $each){
-			preg_match('/^WHERE\s{1}/', $each) ? null : array_walk_recursive($each, array($this,'filter_query_params'));
+			preg_match('/^WHERE\s{1}/', $each) ? null : array_push($checkArray, $each);
 		}
+		array_walk_recursive($checkArray, array($this,'filter_query_params'));
     $query = implode(' ',$query);
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
@@ -391,13 +400,13 @@ class SmallMVCModel{
   
     switch($return_type)
     {
-      case TMVC_SQL_INIT:
+      case SMVC_SQL_INIT:
         return $this->result->fetch();
         break;
-      case TMVC_SQL_ALL:
+      case SMVC_SQL_ALL:
         return $this->result->fetchAll();
         break;
-      case TMVC_SQL_NONE:
+      case SMVC_SQL_NONE:
       default:
         return true;
         break;

@@ -15,7 +15,7 @@ class SmallMVCController{
 		$this->load = SMvc::instance(null, 'loader');
 		$this->view = $this->load->library($this->config['system']['viewer'][0], $this->config['system']['viewer'][1]);
 	}
-	protected function __call($name, $args = null){
+	public function __call($name, $args = null){
 		try{
 			//parse viewer method first to prevent dead loop
 			$refClass = new ReflectionClass($this->view);

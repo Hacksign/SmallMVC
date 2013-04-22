@@ -25,7 +25,7 @@ class SmallMVCLoader{
 	
 		//get controller object
 		$controller = SMvc::instance(null, 'controller');
-		if(isset($controller->$modelName))
+		if(!empty($controller) && isset($controller->$modelName))
 			return $controller->$modelName;
 
 		$fileName = $modelName . '.php';
@@ -48,7 +48,7 @@ class SmallMVCLoader{
 			$e->type = DEBUG;
 			throw $e;
 		}
-		if(!$modelNameEmpty)//store model if it is a exists model
+		if(!$modelNameEmpty && !empty($controller))//store model if it is a exists model
 			$controller->{$modelName} = $modelInstance;
 		return $modelInstance;
 	}

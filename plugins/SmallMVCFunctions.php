@@ -85,7 +85,7 @@ function C($name = null, $params = null){
 	//get SMVC controller object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'controller')){
 		$controllerObj = SMvc::instance(null, 'controller');
-		if($controllerObj->$name)
+		if(!empty($controllerObj->$name))
 			return $controllerObj->$name;
 	}
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){

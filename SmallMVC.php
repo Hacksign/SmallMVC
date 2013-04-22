@@ -5,7 +5,7 @@ if(!defined('DS'))
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '0.8');
+	define('SMVC_VERSION', '0.8.5');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__). DS);
 if(!defined('SMVC_CONFIGDIR'))
@@ -152,7 +152,7 @@ set_include_path(
 					$lib = $this->load->library($params);
 
 				if($lib)
-					SMvc::instance($lib, $library[0]);
+					SMvc::instance($lib, $libName);
 			}//end foreach
 		}//end if($libraries)
 	}
