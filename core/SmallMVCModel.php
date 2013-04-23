@@ -190,7 +190,8 @@ class SmallMVCModel{
 			throw $e;
       return false;
     }
-    $query = array("UPDATE {$this->table} SET");
+		$query[] = "UPDATE ";
+    $query[] = "{$this->table} SET";
     $fields = array();
     $params = array();
     foreach($columns as $cname => $cvalue)
@@ -241,7 +242,8 @@ class SmallMVCModel{
     return $this->lastId();
   }
   public function delete(){
-    $query = array("DELETE FROM `{$this->table}`");
+		$query[] = "DELETE ";
+    $query[] = array("FROM `{$this->table}`");
     $params = array();
     
     // assemble where clause
