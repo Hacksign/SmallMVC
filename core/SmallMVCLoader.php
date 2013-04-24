@@ -9,6 +9,7 @@ class SmallMVCLoader{
 		$modelNameEmpty = false;
 		if(empty($modelName)){
 			$modelNameEmpty = true;
+			$table = null;
 		}else{
 			$table = $modelName;
 			$table = preg_replace("/(.*?)Model$/", "$1", $table);

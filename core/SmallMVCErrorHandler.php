@@ -55,22 +55,18 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 		return;
 	}
 	if(error_reporting() & $errno){
+		$controller = SMvc::instance(null, 'controller');
+		if(empty($controller)){
+			$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
+		}
 		switch($errno){
 			case E_ERROR:
-				$controller = SMvc::instance(null, 'controller');
-				if(empty($controller)){
-					$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
-				}
 				if(SMvc::instance(null,'default')->config['debug']){
 					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
 								<b>Message:</b> {$errstr}<br />
 								<b>File:</b> {$errfile}<br />
 								<b>Line:</b> {$errline}
 								</span>";
-				}
-				if(!SMvc::$scriptExecComplete){
-					$controller->assign('info', $message);
-					$controller->display('#.message');
 				}
 				break;
 			case E_WARNING:
@@ -95,6 +91,10 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 				break;
 			case E_ALL:
 				break;
+		}
+		if(!SMvc::$scriptExecComplete && !empty($message)){
+			$controller->assign('info', $message);
+			$controller->display('#.message');
 		}
 	}
 }
