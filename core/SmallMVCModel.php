@@ -430,8 +430,6 @@ class SmallMVCModel{
 			);
 		foreach($regexs as $regex){
 			if(preg_match("/{$regex}/is", $item)){
-				dump($item);
-				dump($regex);
 				$e = new SmallMVCException("SQL Injection Detected", DEBUG);
 				throw $e;
 			}
