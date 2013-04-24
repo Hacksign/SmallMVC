@@ -417,7 +417,7 @@ class SmallMVCModel{
   }
 	private function filter_query_params($item, $key){
 		$regexs = array(
-			'(and|or)\\b.+?(>|<|=|in|like)',
+			'(and|or)\\b\s+(>|<|=|in|like)',
 			'\\/\\*.+?\\*\\/',
 			'<\\s*script\\b',
 			'\\bEXEC\\b',
@@ -430,6 +430,8 @@ class SmallMVCModel{
 			);
 		foreach($regexs as $regex){
 			if(preg_match("/{$regex}/is", $item)){
+				dump($item);
+				dump($regex);
 				$e = new SmallMVCException("SQL Injection Detected", DEBUG);
 				throw $e;
 			}
