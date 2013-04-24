@@ -29,7 +29,7 @@ class SmallMVCViewer{
 				$fileName = SMVC_BASEDIR . DS . 'view' .  DS . $fileName;
 			}
 			else
-				$fileName = APPDIR . DS . 'view' .  DS . $fileName;
+				$fileName = SMvc::instance(null, 'default')->config['system']['directory']['view'] . DS . $fileName;
 		}
 		if(!file_exists($fileName)){
 			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
@@ -44,7 +44,7 @@ class SmallMVCViewer{
 		}else{
 			if(!preg_match('/\.html$/', $template))
 				$template .= '.html';
-			$template = APPDIR . DS . 'view' .  DS . $template;
+			$template =  SMvc::instance(null, 'default')->config['system']['directory']['view'] . DS . $template;
 		}
 		if(!file_exists($template)){
 			$e = new SmallMVCException("template:$template", PAGE_NOT_FOUND);
@@ -52,7 +52,7 @@ class SmallMVCViewer{
 		}
 		if($layout){
 			if(!preg_match('/\.html$/', $layout))
-				$layout = APPDIR. DS . 'view' . DS . $layout . '.html';
+				$layout =  SMvc::instance(null, 'default')->config['system']['directory']['view'] . DS . $layout . '.html';
 		}else
 			$layout = substr($template, 0, strrpos($template, DS, -1)) . DS . 'layout.html';
 		if(!file_exists($layout)){
@@ -101,7 +101,7 @@ class SmallMVCViewer{
 		extract($this->viewVars);
 		try{
 			$org_include_path = get_include_path();
-			set_include_path(APP_INCLUDE_PATH . PS . $org_include_path);
+			set_include_path(SMvc::instance(null, 'default')->config['system']['directory']['view']);
 			if(!headers_sent()){
 				$charset = SMvc::instance(null, 'default')->config['charset'];
 				header("content-Type: text/html; charset={$charset}");

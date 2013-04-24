@@ -18,53 +18,6 @@ return "<div style='text-align:center;'>
 		  <p>Author Hacksign</p>
 		</div>";
 }
-function create_default_directories(){
-	if(defined('APPDIR')){
-		if(!file_exists(APPDIR)){
-			if(!mkdir(APPDIR)){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR ."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'controller')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'controller')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'controller'."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'model')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'model')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'model'."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'view')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'view')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'view'."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'plugins')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'plugins')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'plugins'."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'config')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'config')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'config'."'", DEBUG);
-				throw $e;
-			}
-		}
-		if(!file_exists(APPDIR . DIRECTORY_SEPARATOR . 'cache')){
-			if(!mkdir(APPDIR . DIRECTORY_SEPARATOR . 'cache')){
-				$e = new SmallMVCException("Cannot create directory '".APPDIR . DIRECTORY_SEPARATOR . 'cache'."'", DEBUG);
-				throw $e;
-			}
-		}
-	}
-}
-
 //param1:the Model file name
 //param2:the params pass to Model
 function M($name = null, $params = null){

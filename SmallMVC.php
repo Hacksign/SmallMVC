@@ -5,7 +5,7 @@ if(!defined('DS'))
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '0.8.5');
+	define('SMVC_VERSION', '0.8.6');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__). DS);
 if(!defined('SMVC_CONFIGDIR'))
@@ -23,14 +23,6 @@ if(!defined('WEB_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
 	define('SMVC_ENTRYSCRIPT', $_SERVER['SCRIPT_NAME']);
 	define('WEB_ROOT', dirname($_SERVER['SCRIPT_NAME']));
 }
-define('APP_INCLUDE_PATH',
- 	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'config'.PS.
-	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'controller'.PS.
-	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'model'.PS.
-	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'view'.PS .
-	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'cache'.PS .
-	$_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'plugins'.PS
-);
 
 set_include_path(
 	get_include_path() . PS .
