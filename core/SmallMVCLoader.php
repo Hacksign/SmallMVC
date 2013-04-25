@@ -103,7 +103,7 @@ class SmallMVCLoader{
 		/**********/
 		$appPath = APPDIR;
 		$ps = explode(PS, get_include_path());
-		$ps = array_merge($ps, SMvc::instance(null, 'default')->config['system']['directory']);
+		$ps = array_merge($ps, SMvc::instance(null, 'default')->config['project']['directory']);
 		foreach($ps as $path){
 			if(preg_match('/^@\./', $fileName) && preg_match("/^$appPath/", $path)){
 				$testPath = $path. DS . preg_replace('/^@\.(.*)/', "$1", $fileName);
@@ -125,9 +125,9 @@ class SmallMVCLoader{
 			$fileName .= '.php';
 		if(preg_match('/^@\./', $fileName)){
 			$fileName = preg_replace('/^@\.(.*)/', "$1", $fileName);
-			$includePath = implode(PS, SMvc::instance(null, 'default')->config['system']['directory']);
+			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']);
 		}else{
-			$includePath = implode(PS, SMvc::instance(null, 'default')->config['system']['directory']) . PS . get_include_path();
+			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']) . PS . get_include_path();
 		}
 		$subPath = explode('.', $fileName);
 		$fileName = implode('.', array_slice($subPath, -2, 2));
