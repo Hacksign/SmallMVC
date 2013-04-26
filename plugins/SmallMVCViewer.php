@@ -73,7 +73,7 @@ class SmallMVCViewer{
 				"/{__LAYOUT__}/s" => "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
 			);
 			$layout = preg_replace(array_keys($regex), array_values($regex), $layout);
-			$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($template) . '.php';
+			$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($template) . '.html';
 			if (is_file($cacheFile) && !( (filemtime($template) > filemtime($cacheFile)) || (filemtime($layoutName) > filemtime($cacheFile))) ) {//判断缓存是否有效
 				 extract($this->viewVars, EXTR_OVERWRITE);
 				 return $this->_view($cacheFile, $getStaticHtml);
