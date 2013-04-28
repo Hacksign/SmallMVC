@@ -1,5 +1,7 @@
 SmallMVC
 ======
+[![SmallMVC](http://www.hacksign.cn/SmallMVC.png)]
+(http://www.hacksign.cn)
 
 A tiny php framework forked from tinymvc.
 Rewrited allmost everything ...
