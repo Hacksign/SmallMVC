@@ -100,7 +100,6 @@ class SmallMVCLoader{
 			return false;
 		if(!preg_match('/\.php$/', $fileName))
 			$fileName .= '.php';
-		/**********/
 		$appPath = APPDIR;
 		$ps = explode(PS, get_include_path());
 		$ps = array_merge($ps, SMvc::instance(null, 'default')->config['project']['directory']);

@@ -21,6 +21,16 @@ mysql.so
 mysql_pdo.so
 ```
 
+##How To Start:
+create a entry file index.php:
+```console
+<?php
+	define('APPDIR', 'your_website_dir');
+	require('/absolute/path/to/SmallMVC.php');
+?>
+```
+then browser the entry via your web browser(http://your-web-server.com/index.php) and read the 'One Minute Start' document.
+
 ##DEMO site:
 <a href="http://www.hacksign.cn">www.hacksign.cn</a>
 

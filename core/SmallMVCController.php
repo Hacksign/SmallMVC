@@ -28,7 +28,13 @@ class SmallMVCController{
 		}catch(ReflectionException $e){
 			//parse controller method, for short name of url address
 			if(get_class(SMvc::instance(null,'controller')) === $this->config['system']['controller']){
-				$controller = $this->load->library($this->config['routing']['controller']);
+				try{
+					$controller = $this->load->library($this->config['routing']['controller']);
+				}catch(SmallMVCException $se){
+					//if Default controller doesn't exists in config.php display default page
+					$controller = $this->load->library($this->config['system']['controller']);
+					SMvc::instance($controller, 'controller');
+				}
 				SMvc::instance($controller, 'controller');
 			}else{
 				$controller = SMvc::instance(null,'controller');
@@ -47,6 +53,9 @@ class SmallMVCController{
 			redirect($url, $time, $msg);
 		else
 			redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
+	}
+	public function index(){
+		$this->display('#.welcome');
 	}
 }
 ?>
