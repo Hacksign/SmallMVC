@@ -55,7 +55,12 @@ class SmallMVCController{
 			redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
 	}
 	public function index(){
-		$this->display('#.welcome');
+		try{
+			$controller = $this->load->library($this->config['routing']['controller']);
+			if(in_array('index', get_class_methods($controller))) $controller->redirect('Index/index');
+		}catch(SmallMVCException $e){
+			$this->display('#.welcome');
+		}
 	}
 }
 ?>
