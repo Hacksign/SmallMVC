@@ -149,8 +149,77 @@
 </pre>
 				<p class="title"><a name="advanced">[ Advanced ]</a></p>
 				<p class='trace'>
-					come later ...
+					<span class='title'>SmallMVC CURD:<br/></span>
+					SmallMVC only support mysql database right now, and you must have mysql.so installed and loaded on your php server.<br/>
+					If you use SmallMVC framwork's default Model class, you must config your php's PDO support correctly.<br/>
+					Ok, let's start, First you should add these lines to your config/config.php(you can find this file in SmallMVC's config/config_database.php.example):<br/>
 				</p>
+<pre>
+	&lt;?php
+	/**
+	* database.php
+	* just copy the content below to your project's config/config.php
+	* and config it correctly
+	*/
+
+		$config['database']['plugin'] = 'SmallMVCModel'; // plugin for db access
+		$config['database']['type'] = 'mysql';      // connection type
+		$config['database']['host'] = 'localhost';  // db hostname
+		$config['database']['name'] = 'dbname';     // db name
+		$config['database']['user'] = 'dbuser';     // db username
+		$config['database']['pass'] = 'dbpass';     // db password
+		$config['database']['persistent'] = false;  // db connection persistence?
+		$config['database']['charset'] = $config['charset'];  // connection charset
+
+	?&gt;
+</pre>
+				<p class='trace'>
+					In the example above you use the framework's default Model class SmallMVCModel.php which lies in core/SmallMVCModel.php.<br/>
+					You can create a model with 'M()' method in your controller like this:
+				</p>
+<pre>
+	$ cat controller/IndexController.php 
+	&lt;?php
+		class IndexController extends SmallMVCController{
+			public function index(){
+				$model_with_table_given = M('TableNameInYourDb');
+				$result1 = $model_with_table_given->where('id >', 1)->query();
+				$model_without_table_given = M();
+				$result2 = $model_without_table_given->from('TableNameInYourDb')->where('id', 1)->query('one');
+				//another example
+				$model_with_table_given->where(array('id', 'insert_time <'), array(1, '2013-01-01'));
+				$result3 = $model_with_table_given->query('all');//query('all') equals query(), this return a fetched array
+
+				$this->assign('result1', $result1['some_field']);
+				$this->assign('result2', $result2);
+				$this->assign('result3', $result3);
+				$this->display('index_page');
+			}
+		}
+	?&gt;
+</pre>
+				<p class='trace'>
+					<span class='title'>Use Third-Part Viewer Engine:<br/></span>
+					just add these line to your config/config.php.
+				</p>
+<pre>
+	$config['system']['viewer'] = array('Your_Third_Part_viewer',array());
+</pre>
+				<p class='trace'>
+					The first element of array is the name of your Third-Part Viewer's FULL NAME<br/>
+					And the second array is the param(s) which will be passed to your viewer class's construct method.<br/>
+					After configured this, setup your Third-Part-Viewer properly wich your Viewer required, and invoke its method in your controller throw '$this->methods_in_your_third_part_viewer()'.
+				</p>
+				<p class='trace'>
+					<span class='title'>Quick Methods<br/></span>
+					<span style='color:red'>M('ModelName')</span>:create a model which lies model/ModelNameModel.php. If there is no ModelNameModel.php in model directory use $config['database']['plugin'] (default is SmallMVCModel.php) instead.<br/>
+					<span style='color:red'>C('ControllerName')</span>:create a controller object which lies controller/ControllerNameController.php, this file must be exists in controller directory or your invoke will be failed.<br/>
+					<span style='color:red'>G('field_name')</span>: get the field_name content in $config['field_name']. <br/>
+					<span style='color:red'>import('file_name')</span>: import a file with file_name if the file_name is like this A.b.c then import c.php in directory A/b/<br/>
+					<br/>
+					<span style='color:red'>For more information please read 'SMVC Document.docx'</span>
+				</p>
+
 			</div>
 			<div style="color:#FF3300;margin:5pt;font-family:Verdana" align="center"> SmallMVC <sup style="color:gray;font-size:9pt"><?php echo SMVC_VERSION; ?></sup></div>
 	</body>

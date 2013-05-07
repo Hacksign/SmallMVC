@@ -8,7 +8,7 @@ $config['system']['loader'] = 'SmallMVCLoader';
 $config['system']['controller'] = 'SmallMVCController';
 $config['system']['action'] = $config['routing']['action'];
 $config['system']['model'] = 'SmallMVCModel';
-$config['system']['viewer'] = array('SmallMVCViewer',array('sfsdfs'));
+$config['system']['viewer'] = array('SmallMVCViewer',array());
 $config['system']['error'] = array('file' => 'SmallMVCErrorHandler', 'class' => array('SmallMVCExceptionHandler','handleException'), 'function' => 'SmallMVCErrorHandler', 'shutdown' => 'SmallMVCShutdownFunction');
 //$config['project']['page']['404'] = 'message.html'; //add this line to your project config.php to display an user defined 404 page. DO *NOT* uncomment this line in this file !
 $config['project']['directory']['config'] = $_SERVER['DOCUMENT_ROOT'].WEB_ROOT.DS.APPDIR.DS.'config';
