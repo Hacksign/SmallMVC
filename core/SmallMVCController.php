@@ -58,6 +58,7 @@ class SmallMVCController{
 		try{
 			$controller = $this->load->library($this->config['routing']['controller']);
 			if(in_array('index', get_class_methods($controller))) $controller->redirect('Index/index');
+			else{throw new SmallMVCException("Dispaly help page", DEBUG);}
 		}catch(SmallMVCException $e){
 			$this->display('#.welcome');
 		}
