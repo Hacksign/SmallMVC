@@ -21,7 +21,7 @@ $config['project']['directory']['plugins'] = $_SERVER['DOCUMENT_ROOT'].WEB_ROOT.
 //auto loads
 $config['autoloads']['scripts'] = array($config['system']['controller'], 'SmallMVCFunctions', $config['system']['model']);
 $config['autoloads']['libraries'] = array();
-//$config['autoloads']['models'] = array('SmallMVCModel');
+$config['autoloads']['models'] = array();
 
 $config['charset'] = 'utf8';
 ?>
