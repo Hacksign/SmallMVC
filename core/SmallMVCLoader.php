@@ -39,6 +39,7 @@ class SmallMVCLoader{
 			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 			$fileName = $modelName.'.php';
 			$this->includeFile($fileName);
+			$modelName = preg_replace('/(.*)\.php$/', '$1', $fileName);
 		}
 		$refClass = new ReflectionClass($modelName);
 		try{
@@ -60,7 +61,7 @@ class SmallMVCLoader{
 			$e = new SmallMVCException("Library name cannot be empty", DEBUG);
 			throw $e;
 		}
-		if(!preg_match('!^[@a-zA-Z]\.{0,1}[a-zA-Z_]+$!', $alias)){
+		if(!preg_match('!^[@a-zA-Z]\.{0,1}[a-zA-Z_.]+$!', $alias)){
 			$e = new SmallMVCException("Library name '{$alias}' is an invalid syntax", DEBUG);
 			throw $e;
 		}
@@ -69,9 +70,6 @@ class SmallMVCLoader{
 			throw $e;
 		}
 		if($this->includeFile($libName)){
-			if(preg_match('/^@\./', $libName)){
-				$libName = preg_replace('/^@\.(.*)/', '$1', $libName);
-			}
 			$refClass = new ReflectionClass($libName);
 			try{
 				if(!is_array($params))
@@ -115,7 +113,7 @@ class SmallMVCLoader{
 		}
 		return false;
 	}
-	private function includeFile($fileName = null){
+	private function includeFile(&$fileName = null){ // includeFile will modify $fileName to the File name which is included without the .php suffix
 		if(!isset($fileName) || empty($fileName)){
 			$e = new SmallMVCException("fileName must be set", DEBUG);
 			throw $e;
@@ -130,12 +128,14 @@ class SmallMVCLoader{
 		}
 		$subPath = explode('.', $fileName);
 		$fileName = implode('.', array_slice($subPath, -2, 2));
+		$modifiedName = preg_replace('/(.*)\.php$/', '$1', $fileName);
 		array_splice($subPath, -2, 2);
 		!empty($subPath) ? $fileName = implode(DS, $subPath).DS.$fileName : null;
 		$ps = explode(PS, $includePath);
 		foreach($ps as $path){
 			if(file_exists($path . DS . $fileName)){
 				require_once($path . DS . $fileName);
+				$fileName = $modifiedName;
 				return true;
 			}
 		}
