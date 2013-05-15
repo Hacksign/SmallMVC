@@ -20,16 +20,22 @@ return "<div style='text-align:center;'>
 }
 //param1:the Model file name
 //param2:the params pass to Model
-function M($name = null, $params = null){
+function M($name = null, $poolName = null){
+	$params_list = func_get_args();
+	array_shift($params_list); // remove $name from params list
+	empty($params_list) ? null : array_shift($params_list);
 	//get SMVC loader object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
-		$model = $load->model($name, $params);
+		$model = $load->model($name, $poolName, $params_list);
 		return $model;
 	}
 	return null;
 }
-function C($name = null, $params = null){
+function C($name = null){
+	$params_list = func_get_args();
+	//remove $name
+	empty($params_list) ? null : array_shift($params_list);
 	if(empty($name)){
 		$e = new SmallMVCException("Controller name is empty", DEBUG);
 		throw $e;
@@ -43,7 +49,7 @@ function C($name = null, $params = null){
 	}
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
-		return $load->library($name, $params);
+		return $load->library($name, $params_list);
 	}
 	$e = new SmallMVCException("Controller Object doesn't exists", DEBUG);
 	throw $e;

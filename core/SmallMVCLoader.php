@@ -4,8 +4,14 @@ class SmallMVCLoader{
 	}
 	//auto create model
 	//param1:Model file name without .php ext
-	//param2:params pass to Model
-	public function model($modelName, $params = array()){
+	//param2:PoolName which database will be used
+	//param3:be geted through func_get_args(), params pass to model
+	public function model($modelName, $poolName = null){
+		$params_list = func_get_args();
+		//remove modelName and poolName
+		empty($params_list)? null : array_shift($params_list);
+		empty($params_list)? null : array_shift($params_list);
+		//end of remove
 		$modelNameEmpty = false;
 		if(empty($modelName)){
 			$modelNameEmpty = true;
@@ -14,6 +20,7 @@ class SmallMVCLoader{
 			$table = $modelName;
 			$table = preg_replace("/(.*?)Model$/", "$1", $table);
 		}
+		$poolName = empty($poolName) ? 'database' : $poolName;
 		(preg_match("/Model$/", $modelName) || $modelNameEmpty)? null : $modelName .= 'Model';
 		if(!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_]+$/', $modelName) && !$modelNameEmpty){
 			$e = new SmallMVCException("Model name '{$modelName}' is an invalid syntax", DEBUG);
@@ -31,11 +38,6 @@ class SmallMVCLoader{
 
 		$fileName = $modelName . '.php';
 		if(!$this->includeFile($fileName)){
-			if(is_array($params)){
-				if(!empty($params[0])) $poolName = $params[0];
-				else{$e = new SmallMVCException("There must be at least one element in params", DEBUG); throw $e;}
-			}else
-				$poolName = !empty($params) && is_string($params) ? $params : 'database';
 			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 			$fileName = $modelName.'.php';
 			$this->includeFile($fileName);
@@ -43,11 +45,12 @@ class SmallMVCLoader{
 		}
 		$refClass = new ReflectionClass($modelName);
 		try{
-			if(empty($params)) $params = array($table);
-			else if(!is_array($params)) $params = array_merge(array($table), array($params));
-			$modelInstance = $refClass->newInstanceArgs($params);
-		}catch(ReflectionException $e){
-			$e->type = DEBUG;
+			$params_list = array_shift($params_list);
+			array_unshift($params_list, $poolName);
+			array_unshift($params_list, $table);
+			$modelInstance = $refClass->newInstanceArgs($params_list);
+		}catch(ReflectionException $refExp){
+			$e = new SmallMVCException($refExp->__toString(), DEBUG);
 			throw $e;
 		}
 		if(!$modelNameEmpty && !empty($controller))//store model if it is a exists model
@@ -55,7 +58,13 @@ class SmallMVCLoader{
 		return $modelInstance;
 	}
 	//auto create library
-	public function library($libName, $params = array()){
+	//params1: libraray name
+	//params2: params pass to library
+	//params...
+	public function library($libName){
+		$params_list = func_get_args();
+		//remove $libName
+		empty($libName) ? null : array_shift($params_list);
 		$alias = $libName;
 		if(empty($alias)){
 			$e = new SmallMVCException("Library name cannot be empty", DEBUG);
@@ -72,9 +81,7 @@ class SmallMVCLoader{
 		if($this->includeFile($libName)){
 			$refClass = new ReflectionClass($libName);
 			try{
-				if(!is_array($params))
-					$params = array($params);
-				return $refClass->newInstanceArgs($params);
+				return $refClass->newInstanceArgs($params_list);
 			}catch(ReflectionException $e){
 				$e->type = DEBUG;
 				throw $e;
