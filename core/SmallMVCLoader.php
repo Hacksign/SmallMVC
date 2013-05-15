@@ -61,7 +61,7 @@ class SmallMVCLoader{
 	//params1: libraray name
 	//params2: params pass to library
 	//params...
-	public function library($libName){
+	public function library(&$libName){
 		$params_list = func_get_args();
 		//remove $libName
 		empty($libName) ? null : array_shift($params_list);
@@ -92,7 +92,7 @@ class SmallMVCLoader{
 		}
 	}
 	//only load script but do not auto create
-	public function script($scriptName){
+	public function script(&$scriptName){
 		if(!preg_match('/^[0-9a-zA-Z@][a-zA-Z_.0-9]+$/', $scriptName)){
 			$e = new SmallMVCException("Invalid script name '{$scriptName}'", DEBUG);
 			throw $e;

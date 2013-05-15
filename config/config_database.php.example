@@ -5,7 +5,7 @@
  * and config it correctly
  */
 
-$config['database']['plugin'] = 'SmallMVCDriverMySQL'; // plugin for db access
+$config['database']['plugin'] = 'database.SmallMVCDriverMySQL'; // plugin for db access
 $config['database']['type'] = 'mysql';      // connection type
 $config['database']['host'] = 'localhost';  // db hostname
 $config['database']['name'] = 'dbname';     // db name

@@ -91,7 +91,7 @@ function redirect($url, $time=0, $msg='') {
         exit($str);
     }
 }
-function import($name = null){
+function import(&$name = null){
 	if(empty($name)){
 		$e = new SmallMVCException("import name is empty", DEBUG);
 		throw $e;
