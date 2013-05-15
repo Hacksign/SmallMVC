@@ -6,7 +6,7 @@ class SmallMVCModel{
 		//remove poolName
 		empty($params_list) ? null : array_shift($params_list);
 		$userModelDriver = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
-		import($userModelDriver);
+		load($userModelDriver);
 		try{
 			$refClass = new ReflectionClass($userModelDriver);
 			$this->driver = $refClass->newInstanceArgs($params_list);

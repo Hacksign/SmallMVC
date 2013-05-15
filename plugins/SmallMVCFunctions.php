@@ -91,7 +91,7 @@ function redirect($url, $time=0, $msg='') {
         exit($str);
     }
 }
-function import(&$name = null){
+function load(&$name = null){
 	if(empty($name)){
 		$e = new SmallMVCException("import name is empty", DEBUG);
 		throw $e;
@@ -103,6 +103,10 @@ function import(&$name = null){
 		return $load->script($name);
 	else
 		return false;
+}
+//const version of import which allowed pass a const string
+function import($filename){
+	return load($filename);
 }
 function remove_xss($val) {
 	 // remove all non-printable characters. CR(0a) and LF(0b) and TAB(9) are allowed
