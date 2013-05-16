@@ -6,6 +6,8 @@
  */
 
 $config['database']['plugin'] = 'database.SmallMVCDriverMySQL'; // plugin for db access
+// default param passed to model which created with M() method is array($tableName, $poolName, $your_arams ...) this configuration set start position in above array which pass to your model class
+$config['database']['first_param_position'] = 0;
 $config['database']['type'] = 'mysql';      // connection type
 $config['database']['host'] = 'localhost';  // db hostname
 $config['database']['name'] = 'dbname';     // db name
