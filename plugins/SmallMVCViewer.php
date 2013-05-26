@@ -63,12 +63,6 @@ class SmallMVCViewer{
 			$content = file_get_contents($template, LOCK_EX);
 			$layoutName = $layout;
 			$layout = file_get_contents($layout, LOCK_EX);
-			$layout = "<?php 
-				if(!isset(\$_SESSION['__prevent_template_view_directly_']) || (isset(\$_SESSION['__prevent_template_view_directly_']) && !\$_SESSION['__prevent_template_view_directly_'])){
-					echo 'can not access this file directly!';
-					exit(0);
-						}
-				?>\n".$layout;
 			$regex = array(
 				"/{__LAYOUT__}/s" => "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
 			);
