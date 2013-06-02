@@ -17,7 +17,10 @@ class SmallMVCModel{
 
 	}
 	function __call($name, $args = null){
-		return call_user_func_array(array($this->driver, $name), $args);
+		$retVal = call_user_func_array(array($this->driver, $name), $args);
+		//check if $this is an drivered class and base class has none special return value
+		if($retVal === $this->driver && $this->dirver !== $this) return $this;
+		else return $retVal;
 	}
 }
 ?>
