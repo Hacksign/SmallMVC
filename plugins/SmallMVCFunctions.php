@@ -20,16 +20,22 @@ return "<div style='text-align:center;'>
 }
 //param1:the Model file name
 //param2:the params pass to Model
-function M($name = null, $params = null){
+function M($name = null, $poolName = null){
+	$params_list = func_get_args();
+	array_shift($params_list); // remove $name from params list
+	empty($params_list) ? null : array_shift($params_list);
 	//get SMVC loader object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
-		$model = $load->model($name, $params);
+		$model = $load->model($name, $poolName, $params_list);
 		return $model;
 	}
 	return null;
 }
-function C($name = null, $params = null){
+function C($name = null){
+	$params_list = func_get_args();
+	//remove $name
+	empty($params_list) ? null : array_shift($params_list);
 	if(empty($name)){
 		$e = new SmallMVCException("Controller name is empty", DEBUG);
 		throw $e;
@@ -43,7 +49,7 @@ function C($name = null, $params = null){
 	}
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
-		return $load->library($name, $params);
+		return $load->library($name, $params_list);
 	}
 	$e = new SmallMVCException("Controller Object doesn't exists", DEBUG);
 	throw $e;
@@ -85,7 +91,7 @@ function redirect($url, $time=0, $msg='') {
         exit($str);
     }
 }
-function import($name = null){
+function load(&$name = null){
 	if(empty($name)){
 		$e = new SmallMVCException("import name is empty", DEBUG);
 		throw $e;
@@ -97,6 +103,10 @@ function import($name = null){
 		return $load->script($name);
 	else
 		return false;
+}
+//const version of import which allowed pass a const string
+function import($filename){
+	return load($filename);
 }
 function remove_xss($val) {
 	 // remove all non-printable characters. CR(0a) and LF(0b) and TAB(9) are allowed

@@ -1,11 +1,10 @@
 <?php
-	session_start();
 if(!defined('DS'))
 	define('DS', DIRECTORY_SEPARATOR);
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '0.8.6');
+	define('SMVC_VERSION', '0.9.0');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__). DS);
 if(!defined('SMVC_CONFIGDIR'))
@@ -41,14 +40,9 @@ set_include_path(
 	public function __construct($id = 'default'){
 		self::$scriptExecComplete = false;
 		self::instance($this, $id);
-		$_SESSION['__prevent_template_view_directly_'] = true;
 	}
 	function __destruct(){
 		self::$scriptExecComplete = true;
-		if(isset($_SESSION)){
-			if(count($_SESSION) === 1 && !empty($_SESSION['__prevent_template_view_directly_']))
-				session_destroy();
-		}
 	}
 
 	public static function &instance($newInstance=null,$id='default'){
