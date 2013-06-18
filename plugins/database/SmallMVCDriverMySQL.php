@@ -371,7 +371,7 @@ class SmallMVCDriverMySQL{
 			preg_match('/^WHERE\s+/', $each) ? null : array_push($checkArray, $each);
 		}
 		array_walk_recursive($checkArray, array($this,'filter_query_params'));
-    $query = implode(' ',$query);
+    $query = is_array($query) ? implode(' ',$query) : $query;
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
       $fetch_mode = PDO::FETCH_ASSOC;  
