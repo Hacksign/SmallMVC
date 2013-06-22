@@ -58,7 +58,7 @@ class SmallMVCDriverMySQL{
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
 			try {
 				$result = $this->pdo->query("SELECT 1 FROM $table LIMIT 1");
-				$this->table = $table;//set table if it exists
+				$this->table = "`$table`";//set table if it exists
 			} catch (Exception $e) {
 				//do nothing because the table doesn't exists
 			}
@@ -226,7 +226,7 @@ class SmallMVCDriverMySQL{
     $column_names = array_keys($columns);
     
 		$query[] = 'INSERT INTO ';
-    $query[] = sprintf("`{$this->table}` (`%s`) VALUES",implode('`,`',$column_names));
+    $query[] = sprintf("{$this->table} (`%s`) VALUES",implode('`,`',$column_names));
     $fields = array();
     $params = array();
     foreach($columns as $cname => $cvalue)
@@ -243,7 +243,7 @@ class SmallMVCDriverMySQL{
   }
   public function delete(){
 		$query[] = "DELETE ";
-    $query[] = array("FROM `{$this->table}`");
+    $query[] = array("FROM {$this->table}");
     $params = array();
     
     // assemble where clause
@@ -325,7 +325,7 @@ class SmallMVCDriverMySQL{
     }
     $query = array();
     $query[] = "SELECT {$this->query_params['select']}";
-    $query[] = "FROM `{$this->query_params['from']}`";
+    $query[] = "FROM {$this->query_params['from']}";
 
     // assemble JOIN clause
     if(!empty($this->query_params['join']))

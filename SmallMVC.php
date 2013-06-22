@@ -67,7 +67,6 @@ set_include_path(
 			Smvc::instance($this->load, 'loader');
 			$this->setupErrorHandling();
 			$this->setupAutoloaders();
-			$this->setupUrlSegments();
 			$this->setupController();
 			$this->controller->{$this->urlSegments[2]}();
 		}else{
@@ -90,33 +89,6 @@ set_include_path(
 			}
 		}
 	}
-	private function setupUrlSegments(){
-		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->config['system']['controller'].'/'.(!empty($this->config['routing']['action']) ? $this->config['routing']['action'] : $this->config['system']['action']);
-		$this->urlSegments = explode('/', $url);
-		if(!empty($this->urlSegments)){
-			if(isset($this->urlSegments[0])){
-				unset($this->urlSegments[0]);
-			}
-			if(!empty($this->urlSegments[1]) && !preg_match('/(^[a-zA-Z][a-zA-Z0-9_]*)Controller$/i', $this->urlSegments[1])){
-				$this->urlSegments[1] = preg_replace('/(^[a-zA-Z][a-zA-Z0-9_]*)/i', "$1Controller", ucfirst(strtolower($this->urlSegments[1])));
-			}else if(empty($this->urlSegments[1])){
-				$this->urlSegments[1] = $this->config['routing']['controller'];
-			}
-			empty($this->urlSegments[2]) ? $this->urlSegments[2] = $this->config['routing']['action'] : null;
-			foreach($this->urlSegments as $value => $key){
-				if($value % 2 == 0 && $value != 0)
-					$_GET[$this->urlSegments[$value - 1]] = $key;
-				else
-					$_GET[$key] = null;
-			}
-		}else
-			$this->urlSegments = array(1 => $this->config['routing']['controller'], 2 => $this->config['routing']['action']);
-	}
-	private function setupController(){
-		$controllerName = !empty($this->urlSegments[1]) ? preg_replace('/\W/', '', $this->urlSegments[1]) : $this->config['system']['controller'];
-		$this->controller = $this->load->library($controllerName);
-		Smvc::instance($this->controller,'controller');
-	}
 	private function setupAutoloaders(){
 		if(!empty($this->config['autoloads']['scripts'])){
 		  foreach($this->config['autoloads']['scripts'] as $script)
@@ -137,10 +109,14 @@ set_include_path(
 				}else if(is_int($libName))
 					$lib = $this->load->library($params);
 
-				if($lib)
-					SMvc::instance($lib, $libName);
+				if($lib) SMvc::instance($lib, $libName);
 			}//end foreach
 		}//end if($libraries)
+	}
+	private function setupController(){
+		$controllerName = !empty($this->urlSegments[1]) ? preg_replace('/\W/', '', $this->urlSegments[1]) : $this->config['system']['controller'];
+		$this->controller = $this->load->library($controllerName);
+		Smvc::instance($this->controller,'controller');
 	}
  }
  $app = new SMvc();
