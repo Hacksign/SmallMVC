@@ -64,9 +64,10 @@ class SmallMVCViewer{
 			$layoutName = $layout;
 			$layout = file_get_contents($layout, LOCK_EX);
 			$regex = array(
-				"/{__LAYOUT__}/s" => "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",
+				"/{__LAYOUT__}/s" => "",
 			);
 			$layout = preg_replace(array_keys($regex), array_values($regex), $layout);
+			$layout = trim($layout);
 			$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($template) . '.html';
 			if (is_file($cacheFile) && !( (filemtime($template) > filemtime($cacheFile)) || (filemtime($layoutName) > filemtime($cacheFile))) ) {//判断缓存是否有效
 				 extract($this->viewVars, EXTR_OVERWRITE);
