@@ -101,7 +101,7 @@ class SmallMVCDriverMySQL{
 		if(is_string($clause))
 			$clause = array($clause);
 		foreach($clause as &$each){
-			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/',$each))
+			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/i',$each))
 				$each = ' '.$each.' ';
 			else if(!preg_match('/[=<>]/',$each))
 			 $each .= ' = ';  
