@@ -4,10 +4,10 @@ $config['routing']['replace'] = array();
 $config['routing']['controller'] = 'IndexController';
 $config['routing']['action'] = 'index';
 //type:
-//			urlroute
+//			pathinfo
 //			troditional
 //$config['routing']['type'] = 'troditional';
-$config['routing']['type'] = 'urlroute';
+$config['routing']['type'] = 'pathinfo';
  
 $config['system']['loader'] = 'SmallMVCLoader';
 $config['system']['router'] = 'SmallMVCRouter';

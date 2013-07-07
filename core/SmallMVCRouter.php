@@ -11,9 +11,9 @@ class SmallMVCRouter{
 			case 'troditional':
 				$this->troditional();
 				break;
-			case 'urlroute':
+			case 'pathinfo':
 			default:
-				$this->urlroute();
+				$this->pathinfo();
 		}
 	}
 	private function troditional(){
@@ -34,7 +34,7 @@ class SmallMVCRouter{
 		}
 		empty($this->SMVCOBJ->urlSegments[2]) ? $this->SMVCOBJ->urlSegments[2] = $this->SMVCOBJ->config['routing']['action'] : null;
 	}
-	private function urlroute(){
+	private function pathinfo(){
 		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->SMVCOBJ->config['system']['controller'].'/'.(!empty($this->SMVCOBJ->config['routing']['action']) ? $this->SMVCOBJ->config['routing']['action'] : $this->SMVCOBJ->config['system']['action']);
 		$this->SMVCOBJ->urlSegments = explode('/', $url);
 		if(!empty($this->SMVCOBJ->urlSegments)){
