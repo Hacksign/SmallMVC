@@ -23,7 +23,6 @@ class SmallMVCDriverMySQL{
 			$table = '';
 		}
 		$config = SMvc::instance(null, 'default')->config;
-		$charset = empty($config['charset']) ? 'utf8' : $config['charset'];
 		if(!$poolName)
 			$poolName = 'database';
 		if($poolName && isset(SMvc::instance(null, 'default')->dbs[$poolName])){
@@ -42,7 +41,7 @@ class SmallMVCDriverMySQL{
 				$config[$poolName]['charset'] = $config['charset'];
 
 			$this->dbname = $config[$poolName]['name'];
-			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']};charset={$charset}";
+			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']};charset={$config[$poolName]['charset']}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
@@ -50,7 +49,6 @@ class SmallMVCDriverMySQL{
 					$config[$poolName]['pass'],
 					array(PDO::ATTR_PERSISTENT => !empty($config[$poolName]['persistent']) ? true : false)
 					);
-				$this->pdo->exec("SET CHARACTER SET {$config[$poolName]['charset']}"); 
 			}catch (PDOException $e) {
 					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config[$poolName]['type']}'. Error: %s",$e->getMessage()), DEBUG);
 					throw $e;
