@@ -49,7 +49,7 @@ class SmallMVCDriverMySQL{
 					$config[$poolName]['pass'],
 					array(PDO::ATTR_PERSISTENT => !empty($config[$poolName]['persistent']) ? true : false)
 					);
-				$this->pdo->exec("SET NAMES {$config[$poolName]['charset']}");
+				$this->pdo->exec("set names '{$config[$poolName]['charset']}'");
 			}catch (PDOException $e) {
 					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config[$poolName]['type']}'. Error: %s",$e->getMessage()), DEBUG);
 					throw $e;
