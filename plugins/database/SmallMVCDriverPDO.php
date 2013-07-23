@@ -6,7 +6,7 @@ if(!defined('SMVC_SQL_INIT'))
 if(!defined('SMVC_SQL_ALL'))
 	  define('SMVC_SQL_ALL', 2);
 
-class SmallMVCDriverMySQL{
+class SmallMVCDriverPDO{
 	private $db = null;
 	private $table = null;
   private $pdo = null;
@@ -56,7 +56,7 @@ class SmallMVCDriverMySQL{
 			}
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
 			try {
-				$result = $this->pdo->query("SELECT 1 FROM $table LIMIT 1");
+				$result = $this->pdo->query("SELECT 1 FROM `$table` LIMIT 1");
 				$this->table = "`$table`";//set table if it exists
 			} catch (Exception $e) {
 				//do nothing because the table doesn't exists
@@ -88,7 +88,7 @@ class SmallMVCDriverMySQL{
 		return false;
 	}
   public function from($clause){
-		$this->query_params['from'] = $clause;
+		$this->query_params['from'] = "`$clause`";
     return $this; 
   }  
   public function where($clause = null,$args = null){
