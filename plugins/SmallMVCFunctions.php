@@ -69,6 +69,31 @@ function G($key = null){
 		throw $e;
 	}
 }
+function U($url = null, $suffix = null){
+	if(SMvc::instance(null, 'default')){
+		$config = SMvc::instance(null, 'default')->config;
+		switch($config['routing']['type']){
+			case 'troditional':
+				$tmp_url = explode('/', $url);
+				$c = array_shift($tmp_url);
+				$a = array_shift($tmp_url);
+				$url = "?_c=$c&_a=$a";
+				for($i = 0; $i < count($tmp_url); ++$i){
+					$url .= ($i % 2 === 0) ? '&' : '=';
+					$url .= $tmp_url[$i];
+				}
+				break;
+			case 'pathinfo':
+				break;
+			default:
+		}
+		$url .= empty($suffix) ? '' : $suffix;
+		return $url;
+	}else{
+		$e = new SmallMVCException("Can not get SMVC instance", DEBUG);
+		throw $e;
+	}
+}
 function redirect($url, $time=0, $msg='') {
     if (empty($msg))
         $msg = "<table style='text-align:center;height:100%;width:100%;'><tr><td>System will redirect to {$url} in {$time} second(s).</td></tr></table>";

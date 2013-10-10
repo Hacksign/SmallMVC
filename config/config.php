@@ -3,8 +3,14 @@ $config['routing']['search'] =  array();
 $config['routing']['replace'] = array();
 $config['routing']['controller'] = 'IndexController';
 $config['routing']['action'] = 'index';
+//type:
+//			pathinfo
+//			troditional
+//$config['routing']['type'] = 'troditional';
+$config['routing']['type'] = 'pathinfo';
  
 $config['system']['loader'] = 'SmallMVCLoader';
+$config['system']['router'] = 'SmallMVCRouter';
 $config['system']['controller'] = 'SmallMVCController';
 $config['system']['action'] = $config['routing']['action'];
 $config['system']['model'] = 'SmallMVCModel';
@@ -20,7 +26,7 @@ $config['project']['directory']['plugins'] = $_SERVER['DOCUMENT_ROOT'].WEB_ROOT.
 
 //auto loads
 $config['autoloads']['scripts'] = array($config['system']['controller'], 'SmallMVCFunctions', $config['system']['model']);
-$config['autoloads']['libraries'] = array();
+$config['autoloads']['libraries'] = array($config['system']['router']);
 $config['autoloads']['models'] = array();
 
 $config['charset'] = 'utf8';

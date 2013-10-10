@@ -49,15 +49,18 @@ class SmallMVCController{
 		}//end catch
 	}//end function _call
 	protected function redirect($url, $time = 0, $msg = ''){
-		if(preg_match('#^(http)[s]*://#', $url))
-			redirect($url, $time, $msg);
-		else
-			redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
+		if(preg_match('#^(http)[s]*://#', $url)) redirect($url, $time, $msg);
+		else if(preg_match('#^[a-z]#i', $url)) redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
+		else redirect(SMVC_ENTRYSCRIPT . $url, $time, $msg);
 	}
 	public function index(){
 		try{
 			$controller = $this->load->library($this->config['routing']['controller']);
-			if(in_array('index', get_class_methods($controller))) $controller->redirect('Index/index');
+			if(in_array('index', get_class_methods($controller))){
+				SMvc::instance(null, 'default')->urlSegments[1] = get_class($controller);
+				SMvc::instance(null, 'default')->urlSegments[2] = 'index';
+				$controller->redirect(U('Index/index'));
+			}
 			else{throw new SmallMVCException("Dispaly help page", DEBUG);}
 		}catch(SmallMVCException $e){
 			$this->display('#.welcome');

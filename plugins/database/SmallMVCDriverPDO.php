@@ -6,7 +6,7 @@ if(!defined('SMVC_SQL_INIT'))
 if(!defined('SMVC_SQL_ALL'))
 	  define('SMVC_SQL_ALL', 2);
 
-class SmallMVCDriverMySQL{
+class SmallMVCDriverPDO{
 	private $db = null;
 	private $table = null;
   private $pdo = null;
@@ -23,7 +23,6 @@ class SmallMVCDriverMySQL{
 			$table = '';
 		}
 		$config = SMvc::instance(null, 'default')->config;
-		$charset = empty($config['charset']) ? 'utf8' : $config['charset'];
 		if(!$poolName)
 			$poolName = 'database';
 		if($poolName && isset(SMvc::instance(null, 'default')->dbs[$poolName])){
@@ -42,7 +41,7 @@ class SmallMVCDriverMySQL{
 				$config[$poolName]['charset'] = $config['charset'];
 
 			$this->dbname = $config[$poolName]['name'];
-			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']};charset={$charset}";
+			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
@@ -50,15 +49,15 @@ class SmallMVCDriverMySQL{
 					$config[$poolName]['pass'],
 					array(PDO::ATTR_PERSISTENT => !empty($config[$poolName]['persistent']) ? true : false)
 					);
-				$this->pdo->exec("SET CHARACTER SET {$config[$poolName]['charset']}"); 
+				$this->pdo->exec("set names '{$config[$poolName]['charset']}'");
 			}catch (PDOException $e) {
 					$e = new SmallMVCException(sprintf("Can't connect to PDO database '{$config[$poolName]['type']}'. Error: %s",$e->getMessage()), DEBUG);
 					throw $e;
 			}
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);    
 			try {
-				$result = $this->pdo->query("SELECT 1 FROM $table LIMIT 1");
-				$this->table = $table;//set table if it exists
+				$result = $this->pdo->query("SELECT 1 FROM `$table` LIMIT 1");
+				$this->table = "`$table`";//set table if it exists
 			} catch (Exception $e) {
 				//do nothing because the table doesn't exists
 			}
@@ -89,7 +88,7 @@ class SmallMVCDriverMySQL{
 		return false;
 	}
   public function from($clause){
-		$this->query_params['from'] = $clause;
+		$this->query_params['from'] = "`$clause`";
     return $this; 
   }  
   public function where($clause = null,$args = null){
@@ -101,7 +100,7 @@ class SmallMVCDriverMySQL{
 		if(is_string($clause))
 			$clause = array($clause);
 		foreach($clause as &$each){
-			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/',$each))
+			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/i',$each))
 				$each = ' '.$each.' ';
 			else if(!preg_match('/[=<>]/',$each))
 			 $each .= ' = ';  
@@ -226,7 +225,7 @@ class SmallMVCDriverMySQL{
     $column_names = array_keys($columns);
     
 		$query[] = 'INSERT INTO ';
-    $query[] = sprintf("`{$this->table}` (`%s`) VALUES",implode('`,`',$column_names));
+    $query[] = sprintf("{$this->table} (`%s`) VALUES",implode('`,`',$column_names));
     $fields = array();
     $params = array();
     foreach($columns as $cname => $cvalue)
@@ -243,7 +242,7 @@ class SmallMVCDriverMySQL{
   }
   public function delete(){
 		$query[] = "DELETE ";
-    $query[] = array("FROM `{$this->table}`");
+    $query[] = array("FROM {$this->table}");
     $params = array();
     
     // assemble where clause
@@ -325,7 +324,7 @@ class SmallMVCDriverMySQL{
     }
     $query = array();
     $query[] = "SELECT {$this->query_params['select']}";
-    $query[] = "FROM `{$this->query_params['from']}`";
+    $query[] = "FROM {$this->query_params['from']}";
 
     // assemble JOIN clause
     if(!empty($this->query_params['join']))
@@ -371,7 +370,7 @@ class SmallMVCDriverMySQL{
 			preg_match('/^WHERE\s+/', $each) ? null : array_push($checkArray, $each);
 		}
 		array_walk_recursive($checkArray, array($this,'filter_query_params'));
-    $query = implode(' ',$query);
+    $query = is_array($query) ? implode(' ',$query) : $query;
     /* if no fetch mode, use default */
     if(!isset($fetch_mode))
       $fetch_mode = PDO::FETCH_ASSOC;  
