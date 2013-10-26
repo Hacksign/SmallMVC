@@ -143,8 +143,11 @@ class SmallMVCLoader{
 		!empty($subPath) ? $fileName = implode(DS, $subPath).DS.$fileName : null;
 		$ps = explode(PS, $includePath);
 		foreach($ps as $path){
-			if(file_exists($path . DS . $fileName)){
-				require_once($path . DS . $fileName);
+			$final_path = $path . DS . $fileName;
+			$final_path = preg_replace('/\/\//', '/', $final_path);
+			$final_path = preg_replace('/\.\./', '.', $final_path);
+			if(file_exists($final_path)){
+				require_once($final_path);
 				$fileName = $modifiedName;
 				return true;
 			}
