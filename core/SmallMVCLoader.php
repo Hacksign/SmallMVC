@@ -38,7 +38,7 @@ class SmallMVCLoader{
 
 		$fileName = $modelName . '.php';
 		if(!$this->includeFile($fileName)){
-			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
+			$modelName = SMvc::instance(null, 'default')->config['system']['model'];
 			$fileName = $modelName.'.php';
 			$this->includeFile($fileName);
 			$modelName = preg_replace('/(.*)\.php$/', '$1', $fileName);
