@@ -1,10 +1,10 @@
 <?php
 class SmallMVCModel{
 	private $driver = null;
-	function __construct($poolName){
+	function __construct($tableName, $poolName){
 		$params_list = func_get_args();
-		//remove poolName
-		empty($params_list) ? null : array_shift($params_list);
+		empty($params_list) ? null : array_shift($params_list); //remove tableName
+		empty($params_list) ? null : array_shift($params_list); //remove poolName
 		$userModelDriver = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 		load($userModelDriver);
 		try{
