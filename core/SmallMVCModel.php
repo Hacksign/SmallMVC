@@ -1,14 +1,15 @@
 <?php
 class SmallMVCModel{
 	private $driver = null;
-	function __construct($poolName){
+	function __construct($tableName, $poolName){
 		$params_list = func_get_args();
-		//remove poolName
-		empty($params_list) ? null : array_shift($params_list);
 		$userModelDriver = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
 		load($userModelDriver);
 		try{
 			$refClass = new ReflectionClass($userModelDriver);
+			$firstParamPosition = SMvc::instance(null, 'default')->config[$poolName]['first_param_position'];
+			$firstParamPosition = empty($firstParamPosition) ? 0 : $firstParamPosition;
+			$params_list = array_slice($params_list, $firstParamPosition);
 			$this->driver = $refClass->newInstanceArgs($params_list);
 		}catch(ReflectionException $refExp){
 			$e = new SmallMVCException($refExp->__toString(), DEBUG);

@@ -38,7 +38,7 @@ class SmallMVCLoader{
 
 		$fileName = $modelName . '.php';
 		if(!$this->includeFile($fileName)){
-			$modelName = SMvc::instance(null, 'default')->config[$poolName]['plugin'];
+			$modelName = SMvc::instance(null, 'default')->config['system']['model'];
 			$fileName = $modelName.'.php';
 			$this->includeFile($fileName);
 			$modelName = preg_replace('/(.*)\.php$/', '$1', $fileName);
@@ -48,9 +48,6 @@ class SmallMVCLoader{
 			$params_list = array_shift($params_list);
 			array_unshift($params_list, $poolName);
 			array_unshift($params_list, $table);
-			$firstParamPosition = SMvc::instance(null, 'default')->config[$poolName]['first_param_position'];
-			$firstParamPosition = empty($firstParamPosition) ? 0 : $firstParamPosition;
-			$params_list = array_slice($params_list, $firstParamPosition);
 			$modelInstance = $refClass->newInstanceArgs($params_list);
 		}catch(ReflectionException $refExp){
 			$e = new SmallMVCException($refExp->__toString(), DEBUG);

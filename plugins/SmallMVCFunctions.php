@@ -23,7 +23,7 @@ return "<div style='text-align:center;'>
 function M($name = null, $poolName = null){
 	$params_list = func_get_args();
 	array_shift($params_list); // remove $name from params list
-	empty($params_list) ? null : array_shift($params_list);
+	empty($params_list) ? null : array_shift($params_list); // remove $poolName from params list
 	//get SMVC loader object
 	if(SMvc::instance(null, 'default') && SMvc::instance(null, 'loader')){
 		$load = SMvc::instance(null, 'loader');
