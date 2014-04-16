@@ -246,7 +246,7 @@ class SmallMVCDriverPDO{
   }
   public function delete(){
 		$query[] = "DELETE ";
-    $query[] = array("FROM {$this->table}");
+    $query[] = "FROM {$this->table}";
     $params = array();
     
     // assemble where clause
