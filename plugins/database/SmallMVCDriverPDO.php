@@ -359,10 +359,11 @@ class SmallMVCDriverPDO{
 			array_walk_recursive($this->query_params['where'], array($this,'filter_query_params'));
       $where_parts = array();
       empty($params) ? $params = array() : null;
-			//$query_params['where'] = array( 0 => array('clause' => 'array('id = ', 'md5 = ')', 'args' => array(), 'prefix' = 'AND'), ...);
+			//$query_params['where'] = array( 0 => array('clause' => 'array('id = ', 'md5 = ')', 'args' => array(), 'prefix' = '[AND|IN|...]'), ...);
 			$cwhere = $this->query_params['where'];
 			$params = array_merge($params,(array) $cwhere['args']);
-			$where_parts[] = join(" ".$cwhere['prefix']." ", $cwhere['clause']);
+			if(is_array($cwhere['clause'])) $where_parts[] = join(" ".$cwhere['prefix']." ", $cwhere['clause']);
+			else if(is_string($cwhere['clause'])) $where_parts[] = $cwhere['clause'];
       $where = 'WHERE '.implode(' AND ',$where_parts);
       return true;
     }
