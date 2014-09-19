@@ -130,6 +130,7 @@ class SmallMVCLoader{
 		if(preg_match('/^@\./', $fileName)){
 			$fileName = preg_replace('/^@\.(.*)/', "$1", $fileName);
 			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']);
+			$includePath = str_replace(DS.DS, DS, $includePath);
 		}else{
 			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']) . PS . get_include_path();
 		}

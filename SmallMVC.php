@@ -4,7 +4,7 @@ if(!defined('DS'))
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '0.9.5');
+	define('SMVC_VERSION', '0.9.6');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__). DS);
 if(!defined('SMVC_CONFIGDIR'))
@@ -18,9 +18,11 @@ if(!defined('APPDIR')){
 	echo "APPDIR must be defined!";
 	exit(0);
 }
-if(!defined('WEB_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
-	define('SMVC_ENTRYSCRIPT', $_SERVER['SCRIPT_NAME']);
-	define('WEB_ROOT', dirname($_SERVER['SCRIPT_NAME']));
+if(!defined('PROJECT_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
+	define('PROJECT_ENTRYSCRIPT', $_SERVER['SCRIPT_NAME']);
+	define('PROJECT_ROOT', $_SERVER['DOCUMENT_ROOT'] . DS . dirname($_SERVER['SCRIPT_NAME']));
+	define('PROJECT_DIR', preg_replace('/^\/(.*)/', '$1', dirname($_SERVER['SCRIPT_NAME'])));
+	define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 }
 
 set_include_path(
@@ -52,25 +54,32 @@ set_include_path(
 		return $instance[$id];
 	}
 	public function run(){
+		//加载全局配置文件
 		if(file_exists(SMVC_CONFIGDIR . DS . 'config.php')){
 			require_once(SMVC_CONFIGDIR . 'config.php');	
-		}
-		if(file_exists(APPDIR . DS . 'config'. DS .'config.php')){
-			require_once(APPDIR . DS . 'config'. DS .'config.php');	
-		}
-		$this->config = $config;
-		if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['loader']))
-			$this->config['system']['loader'] .= '.php';
-		if(file_exists(SMVC_COREDIR . DS . $this->config['system']['loader'])){
-			require_once($this->config['system']['loader']);
-			$this->load = new SmallMVCLoader;
-			Smvc::instance($this->load, 'loader');
-			$this->setupErrorHandling();
-			$this->setupAutoloaders();
-			$this->setupController();
-			$this->controller->{$this->urlSegments[2]}();
+			//加载项目配置文件,项目配置文件内容会覆盖全局配置文件
+			if(file_exists(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php')){
+				require_once(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php');	
+			}
+			$this->config = $config;
+			if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['loader'])) $this->config['system']['loader'] .= '.php';
+			if(file_exists(SMVC_COREDIR . DS . $this->config['system']['loader'])){
+				//工具类Loader,用于加载框架各种文件
+				require_once($this->config['system']['loader']);
+				$this->load = new SmallMVCLoader;
+				Smvc::instance($this->load, 'loader');
+				//初始化错误处理
+				$this->setupErrorHandling();
+				//初始化框架utils,以及项目指定的自动加载脚本
+				$this->setupAutoloaders();
+				//初始化URL解析类
+				$this->setupController();
+				$this->controller->{$this->urlSegments[2]}();
+			}else{
+				throw new Exception(SMVC_COREDIR . DS . $this->config['system']['loader']." not found!");
+			}
 		}else{
-			throw new Exception("SmallMVCLoader can't be loaded");
+				throw new Exception(SMVC_CONFIGDIR.DS."config.php not found!");
 		}
 	}
 	private function setupErrorHandling(){

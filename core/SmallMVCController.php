@@ -50,8 +50,8 @@ class SmallMVCController{
 	}//end function _call
 	protected function redirect($url, $time = 0, $msg = ''){
 		if(preg_match('#^(http)[s]*://#', $url)) redirect($url, $time, $msg);
-		else if(preg_match('#^[a-z]#i', $url)) redirect(SMVC_ENTRYSCRIPT . DS . $url, $time, $msg);
-		else redirect(SMVC_ENTRYSCRIPT . $url, $time, $msg);
+		else if(preg_match('#^[a-z]#i', $url)) redirect(PROJECT_ENTRYSCRIPT . DS . $url, $time, $msg);
+		else redirect(PROJECT_ENTRYSCRIPT . $url, $time, $msg);
 	}
 	public function index(){
 		try{

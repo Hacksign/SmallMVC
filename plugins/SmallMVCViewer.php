@@ -27,9 +27,9 @@ class SmallMVCViewer{
 			if(preg_match('/^#\./', $fileName)){
 				$fileName = preg_replace('/^#\.(.*)/', '$1', $fileName);
 				$fileName = SMVC_BASEDIR . DS . 'view' .  DS . $fileName;
-			}
-			else
+			}else{
 				$fileName = SMvc::instance(null, 'default')->config['project']['directory']['view'] . DS . $fileName;
+			}
 		}
 		if(!file_exists($fileName)){
 			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
@@ -137,13 +137,8 @@ class SmallMVCViewer{
 			$this->assign('entry', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME']));
 			$this->assign('ccontroller', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME'] . '/' . $controllerName));
 		}
-		if(defined('WEB_ROOT')){
-			$this->assign('appdir', preg_replace('/^\/*(.*)/', '$1', WEB_ROOT . '/' . APPDIR));
-			$this->assign('webroot', preg_replace('/^\/*(.*)/', '$1', WEB_ROOT));
-		}else{
-			$e = new SmallMVCException("Please check WEB_ROOT defination in entry file(SmallMVC.php)", DEBUG);
-			throw $e;
-		}
+		$this->assign('appdir', APPDIR);
+		$this->assign('webroot', PROJECT_DIR);
 	}
 }
 ?>
