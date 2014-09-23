@@ -87,14 +87,15 @@ class SmallMVCDriverPDO{
 			return true;
 		return false;
 	}
-  public function from($clause){
-		$this->query_params['from'] = "`$clause`";
+  public function from($table){
+		$this->query_params['from'] = "`{$table}`";
+		$this->table = "`{$table}`";
     return $this; 
   }  
   public function table($table){
-		$this->table = $table;
+		$this->table = "`{$table}`";
     return $this; 
-  }  
+  }
   public function where($clause = null,$args = null){
 		if(empty($clause) || is_int($clause)){
       $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
