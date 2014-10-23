@@ -137,9 +137,9 @@ class SmallMVCViewer{
 			$this->assign('entry', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME']));
 			$this->assign('ccontroller', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME'] . '/' . $controllerName));
 		}
-		if(empty(APPDIR)) $this->assign('appdir', '.');
+		if(!strlen(APPDIR)) $this->assign('appdir', '.');
 		else $this->assign('appdir', APPDIR);
-		if(empty(PROJECT_DIR)) $this->assign('webroot', '.');
+		if(!strlen(PROJECT_DIR)) $this->assign('webroot', '.');
 		else $this->assign('webroot', PROJECT_DIR);
 	}
 }

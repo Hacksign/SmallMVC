@@ -124,17 +124,22 @@ class SmallMVCDriverPDO{
   
 		if(!is_array($clause)) $clause = array($clause);
 		if(!is_array($args)) $args = array($args);
-		for($i = 0; $i < count($clause); $i++){
-			if(!preg_match('![=<>]!',$clause[$i]))
-			 $clause[$i] .= '=';  
-		
-			if(strpos($clause[$i],'?')===false)
-				$clause[$i] .= '?';
+		for($i = 0; $i < count($clause); ++$i){
+			if(!preg_match('![=<>]!',$clause[$i])) $clause[$i] .= '=';  
+			if(strpos($clause[$i],'?')===false) $clause[$i] .= '?';
+		}
+		//if condition is like this: where id=x or id=y or id=c
+		//	expand $clause numbers equal to $args
+		if(count($clause) === 1 && count($clause) < count($args)){
+			$repeat_nums = count($args) - count($clause);
+			for($i = 0; $i < $repeat_nums; ++$i){
+				$clause[] = $clause[0];
+			}
 		}
 
-    $this->_where($clause,$args,'OR');    
+    $this->_where($clause,$args,'OR');
 		return $this;
-  }  
+  }
   public function join($join_table,$join_on,$join_type=null){
     $clause = "JOIN {$join_table} ON {$join_on}";
     
