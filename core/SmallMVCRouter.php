@@ -35,7 +35,7 @@ class SmallMVCRouter{
 		empty($this->SMVCOBJ->urlSegments[2]) ? $this->SMVCOBJ->urlSegments[2] = $this->SMVCOBJ->config['routing']['action'] : null;
 	}
 	private function pathinfo(){
-		$url = !empty($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/'.$this->SMVCOBJ->config['system']['controller'].'/'.(!empty($this->SMVCOBJ->config['routing']['action']) ? $this->SMVCOBJ->config['routing']['action'] : $this->SMVCOBJ->config['system']['action']);
+		$url = !empty($_SERVER['REQUEST_URI']) ? str_replace(PROJECT_ENTRYSCRIPT, '', $_SERVER['REQUEST_URI']) : '/'.$this->SMVCOBJ->config['system']['controller'].'/'.(!empty($this->SMVCOBJ->config['routing']['action']) ? $this->SMVCOBJ->config['routing']['action'] : $this->SMVCOBJ->config['system']['action']);
 		$this->SMVCOBJ->urlSegments = explode('/', $url);
 		if(!empty($this->SMVCOBJ->urlSegments)){
 			if(isset($this->SMVCOBJ->urlSegments[0])){
