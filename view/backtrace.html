@@ -16,6 +16,15 @@
 				padding:8px 0;
 					font-size:25px;
 			}
+			table{
+				table-layout: fixed;
+				border-collapse:collapse;
+				border-spacing:0;
+			}
+			td,th{
+				overflow:hidden;
+				word-wrap:break-word;
+			}
 			.title{
 				margin:4px 0;
 				color:#F60;
@@ -59,11 +68,15 @@
 				<p class="title">[ Information ]</p>
 				<p class="message">{info}</p>
 				<p class="title">[ BackTrace ]</p>
-				<p id='trace'>
-					{foreach:backtrace,each}
-						{each['function']}:{each['line']}&nbsp;-&nbsp;{each['file']}<br/>
+				<div id='trace'>
+					<table border=0>
+					{foreach:backtrace,i,each}
+						<tr>
+							<td>#{i}</td><td>{each['function']}</td><td>:</td><td>{each['line']}</td><td>-</td><td>{each['file']}</td>
+						</tr>
 					{end}
-				</p>
+					</table>
+				</div>
 			</div>
 			<div style="color:#FF3300;margin:5pt;font-family:Verdana" align="center"> SmallMVC <sup style="color:gray;font-size:9pt"><?php echo SMVC_VERSION; ?></sup></div>
 	</body>
