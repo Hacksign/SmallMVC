@@ -4,7 +4,7 @@ if(!defined('DS'))
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '0.9.6');
+	define('SMVC_VERSION', '1.0 beta 1');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__). DS);
 if(!defined('SMVC_CONFIGDIR'))
