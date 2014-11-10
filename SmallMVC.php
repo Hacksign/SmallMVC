@@ -6,13 +6,13 @@ if(!defined('PS'))
 if(!defined('SMVC_VERSION'))
 	define('SMVC_VERSION', '1.0 beta 1');
 if(!defined('SMVC_BASEDIR'))
-	define('SMVC_BASEDIR', dirname(__FILE__). DS);
+	define('SMVC_BASEDIR', dirname(__FILE__));
 if(!defined('SMVC_CONFIGDIR'))
-	define('SMVC_CONFIGDIR', SMVC_BASEDIR . 'config' . DS);
+	define('SMVC_CONFIGDIR', SMVC_BASEDIR . DS . 'config');
 if(!defined('SMVC_COREDIR'))
-	define('SMVC_COREDIR', SMVC_BASEDIR . 'core' . DS);
+	define('SMVC_COREDIR', SMVC_BASEDIR . DS . 'core');
 if(!defined('SMVC_PLUGINDIR'))
-	define('SMVC_PLUGINDIR', SMVC_BASEDIR . 'plugins' . DS);
+	define('SMVC_PLUGINDIR', SMVC_BASEDIR . DS . 'plugins');
 define('SMVC_ERROR_HANDLING', 1);
 if(!defined('APPDIR')){
 	echo "APPDIR must be defined!";
@@ -56,10 +56,10 @@ set_include_path(
 	public function run(){
 		//加载全局配置文件
 		if(file_exists(SMVC_CONFIGDIR . DS . 'config.php')){
-			require_once(SMVC_CONFIGDIR . 'config.php');	
+			require_once(SMVC_CONFIGDIR . DS . 'config.php');
 			//加载项目配置文件,项目配置文件内容会覆盖全局配置文件
 			if(file_exists(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php')){
-				require_once(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php');	
+				require_once(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php');
 			}
 			$this->config = $config;
 			if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['loader'])) $this->config['system']['loader'] .= '.php';
@@ -87,8 +87,8 @@ set_include_path(
 		  error_reporting(E_ALL);
 			if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['error']['file']))
 				$this->config['system']['error']['file'] .= '.php';
-			if(file_exists(SMVC_COREDIR . $this->config['system']['error']['file'])){
-				require_once(SMVC_COREDIR . $this->config['system']['error']['file']);  		  
+			if(file_exists(SMVC_COREDIR . DS . $this->config['system']['error']['file'])){
+				require_once(SMVC_COREDIR . DS . $this->config['system']['error']['file']);
 				set_exception_handler($this->config['system']['error']['class']);
 				set_error_handler($this->config['system']['error']['function']);
 				register_shutdown_function($this->config['system']['error']['shutdown']);
