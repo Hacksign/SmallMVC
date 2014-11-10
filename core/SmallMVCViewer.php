@@ -1,5 +1,5 @@
 <?php
-class SmallMVCTestViewer {
+class SmallMVCViewer {
 	private $data;
 	function __construct() {
 		$this->data = new stdClass;
