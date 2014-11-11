@@ -84,6 +84,7 @@ class SmallMVCViewer {
 			$matches = null;
 			foreach($lines as $line){
 				$line = trim($line);
+				//olny match single line which is quoted by '{}'
 				$num = preg_match_all('/{([^{}]+?)}/', $line, $matches);
 				for($i = 0; $i < $num; $i++) {
 					$match = $matches[0][$i];
@@ -132,15 +133,6 @@ class SmallMVCViewer {
 		);
 
 		$parts = explode(':', $input);
-		$keywords = array("if","switch","foreach","end","endswitch","else","case","include");
-		//if variable is not defined in $this->data and is not a preserve keyword and is not a function invoke, do not modify it
-		if(!in_array($parts[0], $keywords)){
-			if(!isset($this->data->{$parts[0]})){
-				return null;
-			}else if(preg_match("/[a-zA-Z_].*?\(.*?\)/", $input)){
-				return null;
-			}
-		}
 		$string = '<?php ';
 		switch($parts[0]) {
 			case 'if':
@@ -169,6 +161,9 @@ class SmallMVCViewer {
 				$string .= 'echo $this->display("' . $parts[1] . '");';
 				break;
 			default:
+				//just in case there is any javascript hash object in <script><script>, which like this {"aa":true}
+				//	note: if the hash object is like this:'{aa:true}' and is on a single line, the variable will be parsed!!
+				if(strstr($parts[0], '"') !== false) return null;
 				$string .= 'echo ' . preg_replace($from, $to, $parts[0]) . ';';
 				break;
 		}
