@@ -82,31 +82,13 @@ class SmallMVCViewer {
 			$lines = explode("\n", $content);
 			$newLines = array();
 			$matches = null;
-			$bInSpecialTag = false;
-			$closeTag = '';
 			foreach($lines as $line){
 				$line = trim($line);
-				//check if it is a special tag: script,style
-				//do not handle it if in these tags
-				$specialTags = array("<script>" => "</script>", "<noscript>" => "</noscript>", "<style>" => "</style>");
-				foreach($specialTags as $tag => $cTag){
-					if(strstr($line, $tag) !== false){
-						$bInSpecialTag = true;
-						$closeTag = $cTag;
-						break;
-					}
-				}
-				if($bInSpecialTag && strstr($line, $closeTag) !== false){
-					$bInSpecialTag = false;
-					$closeTag = '';
-				}
-				if(!$bInSpecialTag){
-					$num = preg_match_all('/{([^{}]+?)}/', $line, $matches);
-					for($i = 0; $i < $num; $i++) {
-						$match = $matches[0][$i];
-						$new = $this->transformSyntax($matches[1][$i]);
-						if($new) $line = str_replace($match, $new, $line);
-					}
+				$num = preg_match_all('/{([^{}]+?)}/', $line, $matches);
+				for($i = 0; $i < $num; $i++) {
+					$match = $matches[0][$i];
+					$new = $this->transformSyntax($matches[1][$i]);
+					if($new) $line = str_replace($match, $new, $line);
 				}
 				$newLines[] = $line;
 			}
@@ -152,7 +134,7 @@ class SmallMVCViewer {
 		$parts = explode(':', $input);
 		$keywords = array("if","switch","foreach","end","endswitch","else","case","include");
 		//if variable is not defined in $this->data and is not a preserve keyword and is not a function invoke, do not modify it
-		if(!isset($this->data->{$parts[0]}) && !in_array($keywords, $parts[0]) && preg_match("/[a-zA-Z_].*?\(.*?\)/", $input)) return null;
+		if(!isset($this->data->{$parts[0]}) && (!in_array($keywords, $parts[0]) || preg_match("/[a-zA-Z_].*?\(.*?\)/", $input))) return null;
 		$string = '<?php ';
 		switch($parts[0]) {
 			case 'if':
