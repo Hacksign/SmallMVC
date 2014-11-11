@@ -84,8 +84,7 @@ class SmallMVCViewer {
 			$matches = null;
 			foreach($lines as $line){
 				$line = trim($line);
-				//olny match single line which is quoted by '{}'
-				$num = preg_match_all('/{([^{}]+?)}/', $line, $matches);
+				$num = preg_match_all('/\{\{([^{}]+?)\}\}/', $line, $matches);
 				for($i = 0; $i < $num; $i++) {
 					$match = $matches[0][$i];
 					$new = $this->transformSyntax($matches[1][$i]);
