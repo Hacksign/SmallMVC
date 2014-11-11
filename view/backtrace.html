@@ -70,11 +70,11 @@
 				<p class="title">[ BackTrace ]</p>
 				<div id='trace'>
 					<table border=0>
-					@foreach:backtrace,i,each@
+					{foreach:backtrace,i,each}
 						<tr>
-							<td>#@i@</td><td>@each['function']@</td><td>&nbsp;-&nbsp;</td><td>@each['file']@</td><td>&nbsp;:&nbsp;</td><td>@each['line']@</td>
+							<td>#{i}</td><td>{each['function']}</td><td>&nbsp;-&nbsp;</td><td>{each['file']}</td><td>&nbsp;:&nbsp;</td><td>{each['line']}</td>
 						</tr>
-					@end@
+					{end}
 					</table>
 				</div>
 			</div>
