@@ -134,7 +134,13 @@ class SmallMVCViewer {
 		$parts = explode(':', $input);
 		$keywords = array("if","switch","foreach","end","endswitch","else","case","include");
 		//if variable is not defined in $this->data and is not a preserve keyword and is not a function invoke, do not modify it
-		if(!isset($this->data->{$parts[0]}) && (!in_array($keywords, $parts[0]) || preg_match("/[a-zA-Z_].*?\(.*?\)/", $input))) return null;
+		if(!in_array($parts[0], $keywords)){
+			if(!isset($this->data->{$parts[0]})){
+				return null;
+			}else if(preg_match("/[a-zA-Z_].*?\(.*?\)/", $input)){
+				return null;
+			}
+		}
 		$string = '<?php ';
 		switch($parts[0]) {
 			case 'if':
