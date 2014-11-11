@@ -88,7 +88,7 @@ class SmallMVCViewer {
 				for($i = 0; $i < $num; $i++) {
 					$match = $matches[0][$i];
 					$new = $this->transformSyntax($matches[1][$i]);
-					$line = str_replace($match, $new, $line);
+					if($new) $line = str_replace($match, $new, $line);
 				}
 				$newLines[] = $line;
 			}
@@ -130,9 +130,10 @@ class SmallMVCViewer {
 			'$1$this->data->$2$3',
 			'->'
 		);
+		$keywords = array("if","switch","foreach","end","endswitch","else","case","include");
+		if(!isset($this->data->$input) && !in_array($keywords)) return null;
 		
 		$parts = explode(':', $input);
-		
 		$string = '<?php ';
 		switch($parts[0]) {
 			case 'if':
