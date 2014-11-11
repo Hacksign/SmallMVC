@@ -68,31 +68,31 @@ class SmallMVCViewer {
 		$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($fileName) . '.html';
 		//see if cache file is up to date
 		if (filemtime($fileName) > filemtime($cacheFile) || filemtime($layoutName) > filemtime($cacheFile)){
-			$lines = file($fileName);
-			$newLines = array();
-			$matches = null;
-			foreach($lines as $line)  {
-				$num = preg_match_all('/\{([^{}]+)\}/', $line, $matches);
-				if($num > 0) {
-					for($i = 0; $i < $num; $i++) {
-						$match = $matches[0][$i];
-						$new = $this->transformSyntax($matches[1][$i]);
-						$line = str_replace($match, $new, $line);
-					}
-				}
-				$newLines[] = $line;
-			}
-			$content = implode("", $newLines); 
+			$content = file_get_contents($fileName, LOCK_EX);
 			if(!empty($layoutName)){
 				$layoutContent = file_get_contents($layoutName, LOCK_EX);
 				if(preg_match('/^{__LAYOUT__}/', $layoutContent)){
-					$layoutContent = preg_replace("/{__LAYOUT__}/s", "", $layoutContent);
-					$content = preg_replace("/{__CONTENT__}/s", $content, $layoutContent);
+					$layoutContent = preg_replace("/{__LAYOUT__}\n+/s", "", $layoutContent);
+					$content = preg_replace("/{__CONTENT__}\n+/s", $content, $layoutContent);
 				}else{
 					$e = new SmallMVCException("Not a layout file:$layout", DEBUG);
 					throw $e;
 				}
 			}
+			$lines = explode("\n", $content);
+			$newLines = array();
+			$matches = null;
+			foreach($lines as $line)  {
+				$line = trim($line);
+				$num = preg_match_all('/\{([^{}]+)\}/', $line, $matches);
+				for($i = 0; $i < $num; $i++) {
+					$match = $matches[0][$i];
+					$new = $this->transformSyntax($matches[1][$i]);
+					$line = str_replace($match, $new, $line);
+				}
+				$newLines[] = $line;
+			}
+			$content = implode("\n", $newLines);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
 				$e = new SmallMVCException("can not wirte content to cache/ directroy", DEBUG);
 				throw $e;
