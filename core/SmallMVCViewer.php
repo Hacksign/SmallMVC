@@ -163,7 +163,7 @@ class SmallMVCViewer {
 			default:
 				//just in case there is any javascript hash object in <script><script>, which like this {"aa":true}
 				//	note: if the hash object is like this:'{aa:true}' and is on a single line, the variable will be parsed!!
-				if(strstr($parts[0], '"') !== false) return null;
+				if(strstr($parts[0], '"') !== false || strstr($parts[0], "'") !== false) return null;
 				$string .= 'echo ' . preg_replace($from, $to, $parts[0]) . ';';
 				break;
 		}
