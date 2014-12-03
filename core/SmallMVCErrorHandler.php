@@ -44,6 +44,7 @@ class SmallMVCExceptionHandler extends Exception{
 					}
 					$controller->assign('backtrace', $backtrace);
 					$controller->assign('info', $e->message);
+					$controller->assign('_SMVC_VERSION_', SMVC_VERSION);
 					$controller->display('#.backtrace');
 					break;
 			}

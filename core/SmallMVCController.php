@@ -63,6 +63,7 @@ class SmallMVCController{
 			}
 			else{throw new SmallMVCException("Dispaly help page", DEBUG);}
 		}catch(SmallMVCException $e){
+			$this->assign('_SMVC_VERSION_', SMVC_VERSION);
 			$this->display('#.welcome');
 		}
 	}
