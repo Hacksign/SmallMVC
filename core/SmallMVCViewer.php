@@ -71,9 +71,9 @@ class SmallMVCViewer {
 			$content = file_get_contents($fileName, LOCK_EX);
 			if(!empty($layoutName)){
 				$layoutContent = file_get_contents($layoutName, LOCK_EX);
-				if(preg_match('/^{__LAYOUT__}/', $layoutContent)){
-					$layoutContent = preg_replace("/{__LAYOUT__}\n+/s", "", $layoutContent);
-					$content = preg_replace("/{__CONTENT__}\n+/s", $content, $layoutContent);
+				if(preg_match("/^{__LAYOUT__}/", $layoutContent)){
+					$layoutContent = str_replace("{__LAYOUT__}", "", $layoutContent);
+					$content = str_replace("{__CONTENT__}", $content, $layoutContent);
 				}else{
 					$e = new SmallMVCException("Not a layout file:$layout", DEBUG);
 					throw $e;
