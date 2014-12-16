@@ -80,9 +80,7 @@ class SmallMVCDriverPDO{
 		return $this;
   }  
 	public function exists(){
-		$tmp = $this->query_params;
 		$retArray = $this->query('all');
-		$this->query_params = $tmp;
 		if(!empty($retArray))
 			return true;
 		return false;
