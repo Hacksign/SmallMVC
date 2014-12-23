@@ -90,20 +90,6 @@ class SmallMVCViewer {
 					$new = $this->transformSyntax($matches[1][$i]);
 					if($new) $line = str_replace($match, $new, $line);
 				}
-				if(stristr($line, 'src') !== false || stristr($line, 'href') !== false){
-					//any tag contain 'src' or 'href', string './' or '.\' will be replaced to ''
-					$line = preg_replace('/((?<!\.)\.\/|\.\\\\)/', '', $line);
-					//any tag contain 'src' or 'href', string '//' will be replaced to '/'
-					$matches = null;
-					$num = preg_match_all('/<.*?(src|href)\s*?=\s*?[\'"](.*?)[\'"]/', $line, $matches);
-					for($i = 0; $i < $num; ++$i){
-						$replaces = null;
-						$replace_num = preg_match_all('/(\/\/|\\\\\\\\)/', $matches[2][$i], $replaces);
-						for($j = 0; $j < $replace_num; ++$j){
-							$line = str_replace($replaces[1][$j], '/', $line);
-						}
-					}
-				}
 				$newLines[] = $line;
 			}
 			$content = implode("\n", $newLines);
