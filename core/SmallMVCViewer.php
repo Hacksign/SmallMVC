@@ -22,10 +22,10 @@ class SmallMVCViewer {
 	}
 
 	public function display($fileName, $layoutName = null, $getStaticHtml = false){
-		$this->_view($fileName, $layoutName, $getStaticHtml);
+		return $this->_view($fileName, $layoutName, $getStaticHtml);
 	}
 	public function layout($fileName, $layoutName = 'layout.html', $getStaticHtml = false){
-		$this->_view($fileName, $layoutName, $getStaticHtml);
+		return $this->_view($fileName, $layoutName, $getStaticHtml);
 	}
 
 	private function _view($fileName, $layoutName = null, $getStaticHtml = false){	
@@ -119,8 +119,6 @@ class SmallMVCViewer {
 
 	private function transformSyntax($input) {
 		$from = array(
-			//'/(^|\[|,|\(| |\+)([a-zA-Z_][a-zA-Z0-9_]*)($|\W|\.)/',
-			//'/(^|\[|,|\(| |\+)([a-zA-Z_][a-zA-Z0-9_]*)($|\W|\.)/',
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/',
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/', // again to catch those bypassed by overlapping start/end characters 
 			'/\./',
