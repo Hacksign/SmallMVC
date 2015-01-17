@@ -129,12 +129,36 @@ class SmallMVCViewer {
 			'->'
 		);
 
-		$parts = explode(':', $input);
+		$pos = strpos($input, ':');
+		$parts = array();
+		if($pos){
+			$parts[0] = substr($input, 0, $pos);
+			$parts[1] = substr($input, $pos + 1);
+		}else{
+			$parts[0] = $input;
+		}
 		$string = '<?php ';
+		/*
+		 *{{some_variable}}
+		 *{{if:(empty(title)), value1, value2}}
+		 *{{if:(empty(title))}}{{end}}
+		 *{{if:(empty(title))}}aaaa{{else}}bbbb{{end}}
+		 *{{foreach:items,each_item}}{{end}}
+		 *{{foreach:items,each_key, each_value}}{{end}}
+		 *{{switch:title}}{{case:value1}}{{case:value2}}{{endswitch}}
+		 */
 		switch($parts[0]) {
 			case 'if':
+				$pieces = explode(',', $parts[1]);
+				if(count($pieces) === 3){
+					$condition = preg_replace($from, $to, $pieces[0]);
+					$true_value = preg_replace($from, $to, $pieces[1]);
+					$false_value = preg_replace($from, $to, $pieces[2]);
+					$string .= "if($condition){echo {$true_value};}else{echo {$false_value};}";
+				}else $string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { ';
+				break;
 			case 'switch':
-				$string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { ' . ($parts[0] == 'switch' ? 'default: ' : '');
+				$string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { default: ';
 				break;
 			case 'foreach':
 				$pieces = explode(',', $parts[1]);
@@ -153,9 +177,6 @@ class SmallMVCViewer {
 				break;
 			case 'case':
 				$string .= 'break; case ' . preg_replace($from, $to, $parts[1]) . ':';
-				break;
-			case 'include':
-				$string .= 'echo $this->display("' . $parts[1] . '");';
 				break;
 			default:
 				$string .= 'echo ' . preg_replace($from, $to, $parts[0]) . ';';
