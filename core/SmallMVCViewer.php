@@ -119,23 +119,27 @@ class SmallMVCViewer {
 
 	private function transformSyntax($input) {
 		$from = array(
+			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)/',
+			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)/',
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/',
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/', // again to catch those bypassed by overlapping start/end characters 
 			'/\./',
 		);
 		$to = array(
+			'$1$this->data->$2',
+			'$1$this->data->$2',
 			'$1$this->data->$2$3',
 			'$1$this->data->$2$3',
 			'->'
 		);
 
+		//$parts = explode(':', $input);
 		$pos = strpos($input, ':');
-		$parts = array();
-		if($pos){
+		if($pos !== false){
 			$parts[0] = substr($input, 0, $pos);
 			$parts[1] = substr($input, $pos + 1);
 		}else{
-			$parts[0] = $input;
+			$parts[] = $input;
 		}
 		$string = '<?php ';
 		/*
@@ -149,13 +153,39 @@ class SmallMVCViewer {
 		 */
 		switch($parts[0]) {
 			case 'if':
-				$pieces = explode(',', $parts[1]);
-				if(count($pieces) === 3){
-					$condition = preg_replace($from, $to, $pieces[0]);
+				if(substr_count($parts[1], ',') >= 2){
+					$left_parenthesis_count = substr_count($parts[1], '(');
+					$right_parenthesis_count = substr_count($parts[1], ')');
+					if($left_parenthesis_count != $right_parenthesis_count){
+						$e = new SmallMVCException('Template syntax error, parenthesis closure not match.', DEBUG);
+						throw $e;
+					}
+					$index = strrpos($parts[1], ')');
+					if($index !== false){
+						$op_str = $parts[1];
+						$aa = substr($op_str, 0, $index + 1);
+						//replace variables in first block which is defined in $this->data template variables
+						$matches = null;
+						$num = preg_match_all('/(\'|"){0,}(\w+)(\'|"){0,}/s', $aa, $matches);
+						for($i = 0; $i < $num; ++$i){
+							if(isset($this->data->$matches[0][$i])){
+								$aa = str_replace($matches[0][$i], '$this->data->'.$matches[0][$i], $aa);
+							}
+						}
+						$pieces[] = $aa;
+						$op_str = substr($op_str, $index + 2);
+						$bb = explode(',', $op_str);
+						$pieces = array_merge($pieces, $bb);
+					}else{
+						$pieces = explode(',', $parts[1]);
+					}
+					$condition = $pieces[0];
 					$true_value = preg_replace($from, $to, $pieces[1]);
 					$false_value = preg_replace($from, $to, $pieces[2]);
 					$string .= "if($condition){echo {$true_value};}else{echo {$false_value};}";
-				}else $string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { ';
+				}else{
+				 	$string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { ';
+				}
 				break;
 			case 'switch':
 				$string .= $parts[0] . '(' . preg_replace($from, $to, $parts[1]) . ') { default: ';
