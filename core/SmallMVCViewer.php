@@ -119,15 +119,11 @@ class SmallMVCViewer {
 
 	private function transformSyntax($input) {
 		$from = array(
-			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)/',
-			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)/',
-			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/',
-			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|\)|\[|\]|\+)/', // again to catch those bypassed by overlapping start/end characters 
+			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|,|\)|\[|\]|\+)/',
+			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|,|\)|\[|\]|\+)/', // again to catch those bypassed by overlapping start/end characters 
 			'/\./',
 		);
 		$to = array(
-			'$1$this->data->$2',
-			'$1$this->data->$2',
 			'$1$this->data->$2$3',
 			'$1$this->data->$2$3',
 			'->'
@@ -166,7 +162,7 @@ class SmallMVCViewer {
 						$aa = substr($op_str, 0, $index + 1);
 						//replace variables in first block which is defined in $this->data template variables
 						$matches = null;
-						$num = preg_match_all('/(\'|"){0,}(\w+)(\'|"){0,}/s', $aa, $matches);
+						$num = preg_match_all('/(\'|"){0,}\b([a-zA-Z_][a-zA-Z0-9_]*?)\b(\'|"){0,}/s', $aa, $matches);
 						for($i = 0; $i < $num; ++$i){
 							if(isset($this->data->$matches[0][$i])){
 								$aa = str_replace($matches[0][$i], '$this->data->'.$matches[0][$i], $aa);
