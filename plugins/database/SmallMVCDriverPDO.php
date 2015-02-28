@@ -41,7 +41,7 @@ class SmallMVCDriverPDO{
 				$config[$poolName]['charset'] = $config['charset'];
 
 			$this->dbname = $config[$poolName]['name'];
-			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']}";
+			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};port={$config[$poolName]['port']};dbname={$config[$poolName]['name']}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
