@@ -121,11 +121,13 @@ class SmallMVCViewer {
 		$from = array(
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|,|\)|\[|\]|\+)/',
 			'/(^|\[|,|\(|\+| )([a-zA-Z_][a-zA-Z0-9_]*)($|\.|,|\)|\[|\]|\+)/', // again to catch those bypassed by overlapping start/end characters 
+			'/([a-zA-Z_][a-zA-Z0-9_]*)\s*?([<>=!]+)\s*?([a-zA-Z0-9_\'"]+)/',
 			'/\./',
 		);
 		$to = array(
 			'$1$this->data->$2$3',
 			'$1$this->data->$2$3',
+			'$this->data->$1 $2 $3',
 			'->'
 		);
 
