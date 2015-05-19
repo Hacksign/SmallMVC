@@ -46,6 +46,9 @@ class SmallMVCViewer {
 			$layoutName = SMvc::instance(null, 'default')->config['project']['directory']['view'] . DS . $layoutName;
 		}
 		//check whether file exists
+		while(strstr($fileName, DS.DS)){
+			$fileName = str_replace(DS.DS, DS, $fileName);
+		}
 		if(!file_exists($fileName)){
 			$e = new SmallMVCException("display:$fileName", PAGE_NOT_FOUND);
 			throw $e;

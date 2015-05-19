@@ -87,7 +87,7 @@ class SmallMVCLoader{
 				throw $e;
 			}
 		}else{
-			$e = new SmallMVCException("Library:'{$libName}' not found!", DEBUG);
+			$e = new SmallMVCException("Library:'{$libName}' not found!", FILE_NOT_FOUND);
 			throw $e;
 		}
 	}

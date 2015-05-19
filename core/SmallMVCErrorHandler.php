@@ -3,6 +3,7 @@ define('DEBUG', 0);
 define('ERROR', 1);
 define('EXCEP', 2);
 define('PAGE_NOT_FOUND', 3);
+define('FILE_NOT_FOUND', 3);
 class SmallMVCException extends Exception{
 	var $type = null;
 	
@@ -13,44 +14,55 @@ class SmallMVCException extends Exception{
 	}	
 }
 class SmallMVCExceptionHandler extends Exception{
+	private static function showTracePage($e, $controller){
+		$backtrace = $e->getTrace();
+		for($i = 0; $i < count($backtrace); $i++){
+			if(!empty($backtrace[$i + 1])){
+				$backtrace[$i]['function'] = $backtrace[$i + 1]['function'];
+				if(empty($backtrace[$i]['file']))
+					$backtrace[$i]['file'] = $backtrace[$i + 1]['file'];
+				if(empty($backtrace[$i]['line']))
+					$backtrace[$i]['line'] = $backtrace[$i + 1]['line'];
+			}else
+				$backtrace[$i]['function'] = 'Entry';
+		}
+		$controller->assign('backtrace', $backtrace);
+		$controller->assign('info', $e->message);
+		$controller->assign('_SMVC_VERSION_', SMVC_VERSION);
+		$controller->display('#.backtrace');
+	}
   public static function handleException(SmallMVCException $e){
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
 			$controller = SMvc::instance(null, 'loader')->library($controller);
 		}
-		if(SMvc::instance(null, 'default')->config['debug']){
-			switch($e->type){
-				case PAGE_NOT_FOUND:
+		switch($e->type){
+			case PAGE_NOT_FOUND:
+				if(SMvc::instance(null, 'default')->config['debug']){
+					SmallMVCExceptionHandler::showTracePage($e, $controller);
+				}else{
 					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['404']);
 					}else{
-						$controller->assign('info', $e->message."<br/>404 - PAGE NOT FOUND :(");
+						$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
 						$controller->display('#.message');
 					}
-					break;
-				case DEBUG:
-				default:
-					$backtrace = $e->getTrace();
-					for($i = 0; $i < count($backtrace); $i++){
-						if(!empty($backtrace[$i + 1])){
-							$backtrace[$i]['function'] = $backtrace[$i + 1]['function'];
-							if(empty($backtrace[$i]['file']))
-								$backtrace[$i]['file'] = $backtrace[$i + 1]['file'];
-							if(empty($backtrace[$i]['line']))
-								$backtrace[$i]['line'] = $backtrace[$i + 1]['line'];
-						}else
-							$backtrace[$i]['function'] = 'Entry';
+				}
+				break;
+			case DEBUG:
+			default:
+				if(SMvc::instance(null, 'default')->config['debug']){
+					SmallMVCExceptionHandler::showTracePage($e, $controller);
+				}else{
+					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['error'])){
+						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['error']);
+					}else{
+						$controller->assign('info', "Ops~.something is wrong!");
+						$controller->display('#.message');
 					}
-					$controller->assign('backtrace', $backtrace);
-					$controller->assign('info', $e->message);
-					$controller->assign('_SMVC_VERSION_', SMVC_VERSION);
-					$controller->display('#.backtrace');
-					break;
-			}
-		}else{
-			$controller->assign('info', "Ops~.something is wrong!");
-			$controller->display('#.message');
+				}
+				break;
 		}
 		SMvc::$scriptExecComplete = true;
 	}

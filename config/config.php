@@ -19,6 +19,7 @@ $config['system']['model'] = 'SmallMVCModel';
 $config['system']['viewer'] = array('SmallMVCViewer',array());
 $config['system']['error'] = array('file' => 'SmallMVCErrorHandler', 'class' => array('SmallMVCExceptionHandler','handleException'), 'function' => 'SmallMVCErrorHandler', 'shutdown' => 'SmallMVCShutdownFunction');
 //$config['project']['page']['404'] = 'message.html'; //add this line to your project config.php to display an user defined 404 page. DO *NOT* uncomment this line in this file !
+//$config['project']['page']['error'] = 'error.html'; //add this line to your project config.php to display an user defined error page. DO *NOT* uncomment this line in this file !
 $config['project']['directory']['config'] = PROJECT_ROOT.DS.APPDIR.DS.'config';
 $config['project']['directory']['controller'] = PROJECT_ROOT.DS.APPDIR.DS.'controller';
 $config['project']['directory']['model'] = PROJECT_ROOT.DS.APPDIR.DS.'model';
