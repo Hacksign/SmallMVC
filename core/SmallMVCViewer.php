@@ -97,8 +97,13 @@ class SmallMVCViewer {
 			}
 			$content = implode("\n", $newLines);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
-				$e = new SmallMVCException("can not wirte content to cache/ directroy", DEBUG);
-				throw $e;
+				if(SMvc::instance(null, '_SMVC_IN_EXCEPTION')){
+					$cacheFile = tempnam(sys_get_temp_dir(), '_smvc_');
+					file_put_contents($cacheFile, $content, LOCK_EX);
+				}else{
+					$e = new SmallMVCException("can not wirte content to cache/ directroy", DEBUG);
+					throw $e;
+				}
 			}
 		}
 		$content = "";
@@ -106,6 +111,9 @@ class SmallMVCViewer {
 		require_once($cacheFile);
 		$content = ob_get_contents();
 		ob_end_clean();
+		if(SMvc::instance(null, '_SMVC_IN_EXCEPTION')){
+			unlink($cacheFile);
+		}
 		if($getStaticHtml){
 			return $content;
 		}else{

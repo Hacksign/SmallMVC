@@ -33,4 +33,19 @@ $config['autoloads']['libraries'] = array($config['system']['router']);
 $config['autoloads']['models'] = array();
 
 $config['charset'] = 'utf8';
+
+/*
+ * //Database config example section 
+ * $config['database']['plugin'] = 'database.SmallMVCDriverPDO'; // plugin for db access
+ * // default param passed to model which created with M() method is array($tableName, $poolName, $your_arams ...) this configuration set start position in above array which pass to your model class
+ * $config['database']['first_param_position'] = 0;
+ * $config['database']['type'] = 'mysql';      // connection type
+ * $config['database']['host'] = 'localhost';  // db hostname
+ * $config['database']['port'] = '3306';  // db port
+ * $config['database']['name'] = 'dbname';     // db name
+ * $config['database']['user'] = 'dbuser';     // db username
+ * $config['database']['pass'] = 'dbpass';     // db password
+ * $config['database']['persistent'] = false;  // db connection persistence?
+ * $config['database']['charset'] = $config['charset'];  // connection charset
+ * */
 ?>

@@ -32,12 +32,14 @@ class SmallMVCExceptionHandler extends Exception{
 		$controller->display('#.backtrace');
 	}
   public static function handleException(SmallMVCException $e){
+		SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
 			$controller = SMvc::instance(null, 'loader')->library($controller);
 		}
 		switch($e->type){
+			case FILE_NOT_FOUND:
 			case PAGE_NOT_FOUND:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
@@ -68,6 +70,7 @@ class SmallMVCExceptionHandler extends Exception{
 	}
 }
 function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
+	SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 	if(error_reporting() === 0){
 		return;
 	}
@@ -77,15 +80,6 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
 		}
 		switch($errno){
-			case E_ERROR:
-				if(SMvc::instance(null,'default')->config['debug']){
-					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
-								<b>Message:</b> {$errstr}<br />
-								<b>File:</b> {$errfile}<br />
-								<b>Line:</b> {$errline}
-								</span>";
-				}
-				break;
 			case E_WARNING:
 				break;
 			case E_PARSE:
@@ -107,6 +101,17 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			case E_STRICT:
 				break;
 			case E_ALL:
+				break;
+			default:
+				if(SMvc::instance(null,'default')->config['debug']){
+					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
+								<b>Message:</b> {$errstr}<br />
+								<b>File:</b> {$errfile}<br />
+								<b>Line:</b> {$errline}
+								</span>";
+				}else{
+					$message = "Fatal Erro !Please check your log file!";
+				}
 				break;
 		}
 		if(!SMvc::$scriptExecComplete && !empty($message)){
