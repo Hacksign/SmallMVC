@@ -53,19 +53,5 @@ class SmallMVCController{
 		else if(preg_match('#^[a-z]#i', $url)) redirect(PROJECT_ENTRYSCRIPT . DS . $url, $time, $msg);
 		else redirect(PROJECT_ENTRYSCRIPT . $url, $time, $msg);
 	}
-	public function index(){
-		try{
-			$controller = $this->load->library($this->config['routing']['controller']);
-			if(in_array('index', get_class_methods($controller))){
-				SMvc::instance(null, 'default')->urlSegments[1] = get_class($controller);
-				SMvc::instance(null, 'default')->urlSegments[2] = 'index';
-				$controller->redirect(U('Index/index'));
-			}
-			else{throw new SmallMVCException("Dispaly help page", DEBUG);}
-		}catch(SmallMVCException $e){
-			$this->assign('_SMVC_VERSION_', SMVC_VERSION);
-			$this->display('#.welcome');
-		}
-	}
 }
 ?>
