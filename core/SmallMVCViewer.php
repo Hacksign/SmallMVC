@@ -68,7 +68,7 @@ class SmallMVCViewer {
 		else $this->assign('_appdir_', APPDIR);
 		if(!strlen(PROJECT_DIR)) $this->assign('_webroot_', '.');
 		else $this->assign('_webroot_', PROJECT_DIR);
-		if(defined('SMVC_VERSION')) $controller->assign('_SMVC_VERSION_', SMVC_VERSION);
+		if(defined('SMVC_VERSION')) $this->assign('_SMVC_VERSION_', SMVC_VERSION);
 		$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($fileName) . '.html';
 		//see if cache file is up to date
 		if (filemtime($fileName) > filemtime($cacheFile) || filemtime($layoutName) > filemtime($cacheFile)){
