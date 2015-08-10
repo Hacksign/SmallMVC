@@ -3,6 +3,7 @@ define('DEBUG', 0);
 define('ERROR', 1);
 define('EXCEP', 2);
 define('PAGE_NOT_FOUND', 3);
+define('FILE_NOT_FOUND', 3);
 class SmallMVCException extends Exception{
 	var $type = null;
 	
@@ -13,48 +14,62 @@ class SmallMVCException extends Exception{
 	}	
 }
 class SmallMVCExceptionHandler extends Exception{
+	private static function showTracePage($e, $controller){
+		$backtrace = $e->getTrace();
+		for($i = 0; $i < count($backtrace); $i++){
+			if(!empty($backtrace[$i + 1])){
+				$backtrace[$i]['function'] = $backtrace[$i + 1]['function'];
+				if(empty($backtrace[$i]['file']))
+					$backtrace[$i]['file'] = $backtrace[$i + 1]['file'];
+				if(empty($backtrace[$i]['line']))
+					$backtrace[$i]['line'] = $backtrace[$i + 1]['line'];
+			}else
+				$backtrace[$i]['function'] = 'Entry';
+		}
+		$controller->assign('backtrace', $backtrace);
+		$controller->assign('info', $e->message);
+		$controller->display('#.backtrace');
+	}
   public static function handleException(SmallMVCException $e){
+		SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
 			$controller = SMvc::instance(null, 'loader')->library($controller);
 		}
-		if(SMvc::instance(null, 'default')->config['debug']){
-			switch($e->type){
-				case PAGE_NOT_FOUND:
+		switch($e->type){
+			case FILE_NOT_FOUND:
+			case PAGE_NOT_FOUND:
+				if(SMvc::instance(null, 'default')->config['debug']){
+					SmallMVCExceptionHandler::showTracePage($e, $controller);
+				}else{
 					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['404']);
 					}else{
-						$controller->assign('info', $e->message."<br/>404 - PAGE NOT FOUND :(");
+						$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
 						$controller->display('#.message');
 					}
-					break;
-				case DEBUG:
-				default:
-					$backtrace = $e->getTrace();
-					for($i = 0; $i < count($backtrace); $i++){
-						if(!empty($backtrace[$i + 1])){
-							$backtrace[$i]['function'] = $backtrace[$i + 1]['function'];
-							if(empty($backtrace[$i]['file']))
-								$backtrace[$i]['file'] = $backtrace[$i + 1]['file'];
-							if(empty($backtrace[$i]['line']))
-								$backtrace[$i]['line'] = $backtrace[$i + 1]['line'];
-						}else
-							$backtrace[$i]['function'] = 'Entry';
+				}
+				break;
+			case DEBUG:
+			default:
+				if(SMvc::instance(null, 'default')->config['debug']){
+					SmallMVCExceptionHandler::showTracePage($e, $controller);
+				}else{
+					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['error'])){
+						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['error']);
+					}else{
+						$controller->assign('info', "Ops~.something is wrong!");
+						$controller->display('#.message');
 					}
-					$controller->assign('backtrace', $backtrace);
-					$controller->assign('info', $e->message);
-					$controller->display('#.backtrace');
-					break;
-			}
-		}else{
-			$controller->assign('info', "Ops~.something is wrong!");
-			$controller->display('#.message');
+				}
+				break;
 		}
 		SMvc::$scriptExecComplete = true;
 	}
 }
 function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
+	SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 	if(error_reporting() === 0){
 		return;
 	}
@@ -64,15 +79,6 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			$controller = SMvc::instance(null, 'loader')->library(SMvc::instance(null, 'default')->config['system']['controller']);
 		}
 		switch($errno){
-			case E_ERROR:
-				if(SMvc::instance(null,'default')->config['debug']){
-					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
-								<b>Message:</b> {$errstr}<br />
-								<b>File:</b> {$errfile}<br />
-								<b>Line:</b> {$errline}
-								</span>";
-				}
-				break;
 			case E_WARNING:
 				break;
 			case E_PARSE:
@@ -94,6 +100,17 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			case E_STRICT:
 				break;
 			case E_ALL:
+				break;
+			default:
+				if(SMvc::instance(null,'default')->config['debug']){
+					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
+								<b>Message:</b> {$errstr}<br />
+								<b>File:</b> {$errfile}<br />
+								<b>Line:</b> {$errline}
+								</span>";
+				}else{
+					$message = "Fatal Erro !Please check your log file!";
+				}
 				break;
 		}
 		if(!SMvc::$scriptExecComplete && !empty($message)){

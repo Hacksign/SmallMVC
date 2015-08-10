@@ -16,6 +16,15 @@
 				padding:8px 0;
 					font-size:25px;
 			}
+			table{
+				table-layout: fixed;
+				border-collapse:collapse;
+				border-spacing:0;
+			}
+			td,th{
+				overflow:hidden;
+				word-wrap:break-word;
+			}
 			.title{
 				margin:4px 0;
 				color:#F60;
@@ -57,18 +66,18 @@
 			<div class="notice">
 				<h2>Error</h2>
 				<p class="title">[ Information ]</p>
-				<p class="message">
-					<?php echo $info; ?>
-					<p class="title">[ BackTrace ]</p>
-					<p id='trace'>
-						<?php
-							foreach($backtrace as $each){
-								echo "{$each['function']}:{$each['line']}\t-\t{$each['file']}<br/>";
-							}
-						?>
-					</p>
-				</p>
+				<p class="message">{{info}}</p>
+				<p class="title">[ BackTrace ]</p>
+				<div id='trace'>
+					<table border=0>
+						{{foreach:backtrace,i,each}}
+							<tr>
+								<td>#{{i}}</td><td>{{each['function']}}</td><td>&nbsp;-&nbsp;</td><td>{{each['file']}}</td><td>&nbsp;:&nbsp;</td><td>{{each['line']}}</td>
+							</tr>
+						{{end}}
+					</table>
+				</div>
 			</div>
-			<div style="color:#FF3300;margin:5pt;font-family:Verdana" align="center"> SmallMVC <sup style="color:gray;font-size:9pt"><?php echo SMVC_VERSION; ?></sup></div>
+			<div style="color:#FF3300;margin:5pt;font-family:Verdana" align="center"> SmallMVC <sup style="color:gray;font-size:9pt">{{_SMVC_VERSION_}}</sup></div>
 	</body>
 </html>

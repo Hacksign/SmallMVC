@@ -41,7 +41,7 @@ class SmallMVCDriverPDO{
 				$config[$poolName]['charset'] = $config['charset'];
 
 			$this->dbname = $config[$poolName]['name'];
-			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};dbname={$config[$poolName]['name']}";
+			$dsn = !empty($config[$poolName]['dsn']) ? $config[$poolName]['dsn'] : "{$config[$poolName]['type']}:host={$config[$poolName]['host']};port={$config[$poolName]['port']};dbname={$config[$poolName]['name']}";
 			try{
 				$this->pdo = new PDO(
 					$dsn,
@@ -80,39 +80,38 @@ class SmallMVCDriverPDO{
 		return $this;
   }  
 	public function exists(){
-		$tmp = $this->query_params;
 		$retArray = $this->query('all');
-		$this->query_params = $tmp;
 		if(!empty($retArray))
 			return true;
 		return false;
 	}
-  public function from($clause){
-		$this->query_params['from'] = "`$clause`";
+  public function from($table){
+		$this->query_params['from'] = "`{$table}`";
+		$this->table = "`{$table}`";
     return $this; 
   }  
   public function table($table){
-		$this->table = $table;
+		$this->table = "`{$table}`";
     return $this; 
-  }  
+  }
   public function where($clause = null,$args = null){
 		if(empty($clause) || is_int($clause)){
       $e = new SmallMVCException(sprintf("where cannot be empty and must be a string"), DEBUG);
 			throw $e;
 		}
   
-		if(is_string($clause))
-			$clause = array($clause);
-		foreach($clause as &$each){
-			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/i',$each))
-				$each = ' '.$each.' ';
-			else if(!preg_match('/[=<>]/',$each))
-			 $each .= ' = ';  
+		if(!is_array($clause)) $clause = array($clause);
+		if(!is_array($args)) $args = array($args);
+		foreach($clause as &$each_clause){
+			if(preg_match('/(\w*\bis\b(\s*(not)){0,1})|(\w*\blike\b)/i',$each_clause))
+				$each_clause = ' '.$each_clause.' ';
+			else if(!preg_match('/[=<>]/',$each_clause))
+			 $each_clause .= ' = ';  
 		
-			if(strpos($each,'?')===false)
-				$each .= ' ? ';
+			if(strpos($each_clause,'?')===false)
+				$each_clause .= ' ? ';
 		}
-    $this->_where($clause,(array)$args,'AND');    
+    $this->_where($clause,$args,'AND');    
 		return $this;
   }
   public function orwhere($clause,$args){
@@ -121,19 +120,24 @@ class SmallMVCDriverPDO{
 			throw $e;
 		}
   
-		if(is_string($clause))
-			$clause = array($clause);
-		for($i = 0; $i < count($clause); $i++){
-			if(!preg_match('![=<>]!',$clause[$i]))
-			 $clause[$i] .= '=';  
-		
-			if(strpos($clause[$i],'?')===false)
-				$clause[$i] .= '?';
+		if(!is_array($clause)) $clause = array($clause);
+		if(!is_array($args)) $args = array($args);
+		for($i = 0; $i < count($clause); ++$i){
+			if(!preg_match('![=<>]!',$clause[$i])) $clause[$i] .= '=';  
+			if(strpos($clause[$i],'?')===false) $clause[$i] .= '?';
+		}
+		//if condition is like this: where id=x or id=y or id=c
+		//	expand $clause numbers equal to $args
+		if(count($clause) === 1 && count($clause) < count($args)){
+			$repeat_nums = count($args) - count($clause);
+			for($i = 0; $i < $repeat_nums; ++$i){
+				$clause[] = $clause[0];
+			}
 		}
 
-    $this->_where($clause,$args,'OR');    
+    $this->_where($clause,$args,'OR');
 		return $this;
-  }  
+  }
   public function join($join_table,$join_on,$join_type=null){
     $clause = "JOIN {$join_table} ON {$join_on}";
     
@@ -187,8 +191,7 @@ class SmallMVCDriverPDO{
 		}
   }  
   public function update($columns){
-    if(empty($columns)||!is_array($columns))
-    {
+    if(empty($columns)||!is_array($columns)){
       $e = new SmallMVCException("Unable to update, at least one column required", DEBUG);
 			throw $e;
       return false;
@@ -197,10 +200,8 @@ class SmallMVCDriverPDO{
     $query[] = "{$this->table} SET";
     $fields = array();
     $params = array();
-    foreach($columns as $cname => $cvalue)
-    {
-      if(!empty($cname))
-      {
+    foreach($columns as $cname => $cvalue){
+      if(!empty($cname)){
         $fields[] = "{$cname}=?";
         $params[] = $cvalue;
       }
@@ -212,35 +213,46 @@ class SmallMVCDriverPDO{
       $query[] = $where_string;
       $params = array_merge($params,$where_params);
     }
-
     $this->query_params = array('select' => '*');
     return $this->_query($query,$params);
   }
 
-  public function insert($columns)
-  {
-    if(empty($columns)||!is_array($columns))
-    {
+  public function insert($columns){
+    if(empty($columns)||!is_array($columns)){
       $e = new SmallMVCException("Unable to insert, at least one column required", DEBUG);
 			throw $e;
-      return false;
     }
-    
     $column_names = array_keys($columns);
-    
 		$query[] = 'INSERT INTO ';
     $query[] = sprintf("{$this->table} (`%s`) VALUES",implode('`,`',$column_names));
     $fields = array();
     $params = array();
-    foreach($columns as $cname => $cvalue)
-    {
-      if(!empty($cname))
-      {
-        $fields[] = "?";
-        $params[] = $cvalue;
-      }
-    }
-    $query[] = '(' . implode(',',$fields) . ')';
+
+		$is_multi_data = false;
+		for($i = 0; $i < count($column_names); ++$i){
+			if(is_array($columns[$column_names[$i]]) && !empty($columns[$column_names[$i]][0])){
+				$is_multi_data = true;
+				foreach($columns[$column_names[$i]] as $value_index => $value){
+					$params[$value_index * count($column_names) + $i] = $value;
+					$fields[] = '?';
+				}
+			}else{
+				$params[$i] = $columns[$column_names[$i]];
+				$fields[] = '?';
+			}
+		}
+		ksort($params, SORT_NUMERIC);
+		for($m = 0; $m < count($fields)/count($column_names); ++$m){
+			$temp_fields = array();
+			for($n = 0; $n < count($column_names); ++$n){
+				$temp_fields = array_slice($fields, $m * count($column_names), count($column_names), false);
+			}
+			if($m === 0){
+				$query[] = '(' . implode(',',$temp_fields) . ')';
+			}else{
+				$query[] = ',(' . implode(',',$temp_fields) . ')';
+			}
+		}
     $this->_query($query,$params);
     return $this->lastId();
   }
@@ -250,14 +262,15 @@ class SmallMVCDriverPDO{
     $params = array();
     
     // assemble where clause
-    if($this->_assemble_where($where_string,$where_params))
-    {    
+    if($this->_assemble_where($where_string,$where_params)){    
       $query[] = $where_string;
       $params = array_merge($params,$where_params);
     }
 
 		$this->query_params = !empty($this->query_params) ? array_merge(array('select' => '*'),$this->query_params) : array('select' => '*');
-    return $this->_query($query,$params);
+    $result = $this->_query($query,$params);
+    $this->query_params = array('select' => '*');
+		return $result;
   }
   public function lastId(){
     return $this->pdo->lastInsertId();
@@ -270,21 +283,28 @@ class SmallMVCDriverPDO{
     return $this->result->rowCount();
   }
 
-  private function _where($clause, $args=array(), $prefix='AND'){    
+  private function _where($clause = array(), $args=array(), $prefix='AND'){    
     // sanity check
-    if(empty($clause))
-      return false;
-    
-    // make sure number of ? match number of args
-		if(is_array($clause) && (count($args) != count($clause))){
-      $e = new SmallMVCException("Number of where clause args don't match number args", DEBUG);
+    if(empty($clause) || empty($args)) return false;
+		//data format check
+		if(!is_array($clause) || !is_array($args)){
+			$e = new SmallMVCException("params format error, either clause or args must be an array", DEBUG);
 			throw $e;
 		}
+		// make sure number of ? match number of args
+		if(count($args) != count($clause)){
+			$e = new SmallMVCException("Number of where clause args don't match number args", DEBUG);
+			throw $e;
+		}
+		foreach($clause as $each_clause){
+			$this->query_params['where']['clause'][] = $each_clause;
+		}
+		foreach($args as $each_args){
+			$this->query_params['where']['args'][] = $each_args;
+			$this->query_params['where']['prefix'][] = $prefix;
+		}
       
-    if(!isset($this->query_params['where']))
-      $this->query_params['where'] = array();
-      
-    return $this->query_params['where'] = array('clause'=>$clause,'args'=>$args,'prefix'=>$prefix);
+    return $this->query_params['where'];
   }  
   private function _in($field,$elements,$list=false,$prefix='AND')
   { 
@@ -359,11 +379,14 @@ class SmallMVCDriverPDO{
 			array_walk_recursive($this->query_params['where'], array($this,'filter_query_params'));
       $where_parts = array();
       empty($params) ? $params = array() : null;
-			//$query_params['where'] = array( 0 => array('clause' => 'array('id = ', 'md5 = ')', 'args' => array(), 'prefix' = 'AND'), ...);
+			//$query_params['where'] = array(clause => array(), 'args' => array(), 'prefix' = array());
 			$cwhere = $this->query_params['where'];
-			$params = array_merge($params,(array) $cwhere['args']);
-			$where_parts[] = join(" ".$cwhere['prefix']." ", $cwhere['clause']);
-      $where = 'WHERE '.implode(' AND ',$where_parts);
+			$params = array_merge($params,(array)$cwhere['args']);
+			for($i = 0; $i < count($this->query_params['where']['clause']); ++$i){
+				if($i == 0) $where_parts[] = " {$this->query_params['where']['clause'][$i]}";
+				else $where_parts[] = " {$this->query_params['where']['prefix'][$i]} {$this->query_params['where']['clause'][$i]}";
+			}
+      $where = 'WHERE '.implode(' ',$where_parts);
       return true;
     }
     return false;
@@ -389,7 +412,6 @@ class SmallMVCDriverPDO{
     } catch (PDOException $e) {
         $e = new SmallMVCException(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query), DEBUG);
 				throw $e;
-        return false;
     }      
     
     /* execute with params */
@@ -398,25 +420,22 @@ class SmallMVCDriverPDO{
     } catch (PDOException $e) {
         $e = new SmallMVCException(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query), DEBUG);
 				throw $e;
-        return false;
     }
   
-    /* get result with fetch mode */
-    $this->result->setFetchMode($fetch_mode);  
-  
-    switch($return_type)
-    {
-      case SMVC_SQL_INIT:
-        return $this->result->fetch();
-        break;
-      case SMVC_SQL_ALL:
-        return $this->result->fetchAll();
-        break;
-      case SMVC_SQL_NONE:
-      default:
-        return true;
-        break;
-    }
+		/* get result with fetch mode */
+		$this->result->setFetchMode($fetch_mode);  
+		switch($return_type){
+			case SMVC_SQL_INIT:
+				return $this->result->fetch();
+				break;
+			case SMVC_SQL_ALL:
+				return $this->result->fetchAll();
+				break;
+			case SMVC_SQL_NONE:
+			default:
+				return true;
+				break;
+		}
   }
 	private function filter_query_params($item, $key){
 		$regexs = array(

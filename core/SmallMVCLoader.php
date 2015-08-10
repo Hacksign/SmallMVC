@@ -87,7 +87,7 @@ class SmallMVCLoader{
 				throw $e;
 			}
 		}else{
-			$e = new SmallMVCException("Library:'{$libName}' not found!", DEBUG);
+			$e = new SmallMVCException("Library:'{$libName}' not found!", FILE_NOT_FOUND);
 			throw $e;
 		}
 	}
@@ -130,6 +130,7 @@ class SmallMVCLoader{
 		if(preg_match('/^@\./', $fileName)){
 			$fileName = preg_replace('/^@\.(.*)/', "$1", $fileName);
 			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']);
+			$includePath = str_replace(DS.DS, DS, $includePath);
 		}else{
 			$includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']) . PS . get_include_path();
 		}
@@ -140,11 +141,8 @@ class SmallMVCLoader{
 		!empty($subPath) ? $fileName = implode(DS, $subPath).DS.$fileName : null;
 		$ps = explode(PS, $includePath);
 		foreach($ps as $path){
-			$final_path = $path . DS . $fileName;
-			$final_path = preg_replace('/\/\//', '/', $final_path);
-			$final_path = preg_replace('/\.\./', '.', $final_path);
-			if(file_exists($final_path)){
-				require_once($final_path);
+			if(file_exists($path . DS . $fileName)){
+				require_once($path . DS . $fileName);
 				$fileName = $modifiedName;
 				return true;
 			}
