@@ -69,7 +69,9 @@ class SmallMVCViewer {
 		if(!strlen(PROJECT_DIR)) $this->assign('_webroot_', '.');
 		else $this->assign('_webroot_', PROJECT_DIR);
 		if(defined('SMVC_VERSION')) $this->assign('_SMVC_VERSION_', SMVC_VERSION);
-		$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . md5($fileName) . '.html';
+		$cacheFile = SMvc::instance(null, 'default')->config['project']['directory']['cache'] . DS . 'views' . DS . md5($fileName) . '.html';
+    $regex = DS.'+';
+    $cacheFile = preg_replace("/(\/+)|(\+)/", DS, $cacheFile);
 		//see if cache file is up to date
 		if (filemtime($fileName) > filemtime($cacheFile) || filemtime($layoutName) > filemtime($cacheFile)){
 			$content = file_get_contents($fileName, LOCK_EX);
@@ -96,13 +98,21 @@ class SmallMVCViewer {
 				}
 				$newLines[] = $line;
 			}
+      if(!file_exists(dirname($cacheFile))){
+        if(is_writable(SMvc::instance(null, 'default')->config['project']['directory']['cache'])){
+          mkdir(dirname($cacheFile), 0755, false);
+        }else if(!SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
+          $e = new SmallMVCException(SMvc::instance(null, 'default')->config['project']['directory']['cache']." is not writable", EXCEPTION_ACCESS_DEINED);
+          throw $e;
+        }
+      }
 			$content = implode("\n", $newLines);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
-				if(SMvc::instance(null, '_SMVC_IN_EXCEPTION')){
+				if(SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
 					$cacheFile = tempnam(sys_get_temp_dir(), '_smvc_');
 					file_put_contents($cacheFile, $content, LOCK_EX);
 				}else{
-					$e = new SmallMVCException("can not wirte content to cache/ directroy", DEBUG);
+					$e = new SmallMVCException("can not wirte content to cache/ directroy", EXCEPTION_ACCESS_DEINED);
 					throw $e;
 				}
 			}
@@ -112,7 +122,7 @@ class SmallMVCViewer {
 		require_once($cacheFile);
 		$content = ob_get_contents();
 		ob_end_clean();
-		if(SMvc::instance(null, '_SMVC_IN_EXCEPTION')){
+		if(SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
 			unlink($cacheFile);
 		}
 		if($getStaticHtml){

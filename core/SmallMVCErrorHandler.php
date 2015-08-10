@@ -4,6 +4,7 @@ define('ERROR', 1);
 define('EXCEP', 2);
 define('PAGE_NOT_FOUND', 3);
 define('FILE_NOT_FOUND', 3);
+define('EXCEPTION_ACCESS_DEINED', 4);
 class SmallMVCException extends Exception{
 	var $type = null;
 	
@@ -15,6 +16,7 @@ class SmallMVCException extends Exception{
 }
 class SmallMVCExceptionHandler extends Exception{
 	private static function showTracePage($e, $controller){
+    SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_SYSTEM');
 		$backtrace = $e->getTrace();
 		for($i = 0; $i < count($backtrace); $i++){
 			if(!empty($backtrace[$i + 1])){
@@ -31,7 +33,6 @@ class SmallMVCExceptionHandler extends Exception{
 		$controller->display('#.backtrace');
 	}
   public static function handleException(SmallMVCException $e){
-		SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
@@ -52,6 +53,8 @@ class SmallMVCExceptionHandler extends Exception{
 				}
 				break;
 			case DEBUG:
+      case EXCEPTION_ACCESS_DEINED :
+        $e->message = preg_replace('/(\/+)|(\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
@@ -69,7 +72,6 @@ class SmallMVCExceptionHandler extends Exception{
 	}
 }
 function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
-	SMvc::instance(new stdClass(), '_SMVC_IN_EXCEPTION');
 	if(error_reporting() === 0){
 		return;
 	}
