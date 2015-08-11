@@ -1,4 +1,7 @@
 <?php
+/**
+ * 项目配置文件.
+ */
 $config['debug'] = false;
 
 $config['routing']['search'] =  array();

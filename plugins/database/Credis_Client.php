@@ -148,6 +148,9 @@ class Credis_Client {
      * @var resource|Redis
      */
     protected $redis;
+    /**
+     * @var resource
+     */
     protected $redisMulti;
 
     /**
@@ -264,6 +267,9 @@ class Credis_Client {
         $this->standalone = ! extension_loaded('redis');
     }
 
+    /**
+     * destruct function
+     */
     public function __destruct()
     {
         if ($this->closeOnDestruct) {
@@ -272,6 +278,8 @@ class Credis_Client {
     }
 
     /**
+     * Force Credis_Client use stand alone driver.
+     *
      * @throws CredisException
      * @return Credis_Client
      */
@@ -285,6 +293,8 @@ class Credis_Client {
     }
 
     /**
+     * setMaxConnectRetries.
+     *
      * @param int $retries
      * @return Credis_Client
      */
@@ -295,6 +305,8 @@ class Credis_Client {
     }
 
     /**
+     * setCloseOnDestruct.
+     *
      * @param bool $flag
      * @return Credis_Client
      */
@@ -305,6 +317,8 @@ class Credis_Client {
     }
 
     /**
+     * connect.
+     *
      * @throws CredisException
      * @return Credis_Client
      */
@@ -403,6 +417,8 @@ class Credis_Client {
     }
 
     /**
+     * close connection.
+     *
      * @return bool
      */
     public function close()
@@ -420,6 +436,8 @@ class Credis_Client {
     }
 
     /**
+     * auth with password.
+     *
      * @param string $password
      * @return bool
      */
@@ -431,6 +449,8 @@ class Credis_Client {
     }
 
     /**
+     * select data base index.
+     *
      * @param int $index
      * @return bool
      */
@@ -441,6 +461,12 @@ class Credis_Client {
         return $response;
     }
 
+    /**
+     * magic call.
+     *
+     * @param string $name method name
+     * @param mixed $args parameters will be passed to $name method
+     */
     public function __call($name, $args)
     {
         // Lazy connection
@@ -656,6 +682,11 @@ class Credis_Client {
         return $response;
     }
 
+    /**
+     * send a command to redis server.
+     *
+     * @param string $command command string.
+     */
     protected function write_command($command)
     {
         // Reconnect on lost connection (Redis server "timeout" exceeded since last command)
@@ -686,6 +717,11 @@ class Credis_Client {
         }
     }
 
+    /**
+     * receive replay from server
+     *
+     * @param string $name command name.
+     */
     protected function read_reply($name = '')
     {
         $reply = fgets($this->redis);
@@ -785,6 +821,12 @@ class Credis_Client {
         return sprintf('*%d%s%s%s', count($args), CRLF, implode(array_map(array('self', '_map'), $args), CRLF), CRLF);
     }
 
+    /**
+     * printf some ting.
+     *
+     * @param string $arg
+     * @return string
+     */
     private static function _map($arg)
     {
         return sprintf('$%d%s%s', strlen($arg), CRLF, $arg);

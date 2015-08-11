@@ -1,4 +1,21 @@
 <?php
+/**
+ * License:
+ * (MIT License)
+ * Copyright (c) 2013 Hacksign (http://www.hacksign.cn)
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+/**
+ * 框架加载器.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 class SmallMVCLoader{
 	function __construct(){
 	}
@@ -87,7 +104,7 @@ class SmallMVCLoader{
 				throw $e;
 			}
 		}else{
-			$e = new SmallMVCException("Library:'{$libName}' not found!", FILE_NOT_FOUND);
+			$e = new SmallMVCException("Library:'{$libName}' not found!", EXCEPTION_NOT_FOUND);
 			throw $e;
 		}
 	}

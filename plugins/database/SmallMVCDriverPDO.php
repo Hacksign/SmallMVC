@@ -1,23 +1,81 @@
 <?php
+/**
+ * License:
+ * (MIT License)
+ * Copyright (c) 2013 Hacksign (http://www.hacksign.cn)
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
 if(!defined('SMVC_SQL_NONE'))
-	  define('SMVC_SQL_NONE', 0);
+  /**
+   * @name SMVC_SQL_NONE 不对查询结果进行任何操作,直接返回原始resource.
+   */
+  define('SMVC_SQL_NONE', 0);
 if(!defined('SMVC_SQL_INIT'))
-	  define('SMVC_SQL_INIT', 1);
+  /**
+   * @name SMVC_SQL_INIT 对查询结果进行一次fetch然后返回.
+   */
+  define('SMVC_SQL_INIT', 1);
 if(!defined('SMVC_SQL_ALL'))
-	  define('SMVC_SQL_ALL', 2);
+  /**
+   * @name SMVC_SQL_ALL 对查询结果进行一次fetchAll然后返回.
+   */
+  define('SMVC_SQL_ALL', 2);
 
+/**
+ * 框架数据库驱动类.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 class SmallMVCDriverPDO{
-	private $db = null;
+  /**
+   * @var string|null $table 表名
+   */
 	private $table = null;
+  /**
+   * @var resource|null $pdo pdo对象
+   */
   private $pdo = null;
+  /**
+   * @var resource|null $result 结果集
+   */
   private $result = null;
+  /**
+   * @var resource|PDO::FETCH+ASSOC $fetch_mode fetch方式
+   */
   private $fetch_mode = PDO::FETCH_ASSOC;
+  /**
+   * @var mixed[] $query_params 查询语句参数数组
+   */
   private $query_params = array('select' => '*');
+  /**
+   * @var string|null $dbname 数据库名称
+   */
 	protected $dbname = null;
 
+  /**
+   * 析构函数
+   *
+   * 负责清空pdo对象.
+   */
   function __destruct(){
     $this->pdo = null;
   }
+  /**
+   * 构造函数
+   *
+   * 构造函数负责接受由SmallMVCModel的构造函数传递过来的参数.
+   * 第一个参数的位置由SmallMVCModel构造函数的参数列表和配置文件中的first_parameter_position共同决定.
+   *
+   * @param string|null $table 表名
+   * @param string|null $poolName 数据库在配置文件中的索引.
+   *
+   * @return resource
+   */
 	function __construct($table = null,$poolName = null){
 		if(!isset($table)){
 			$table = '';
@@ -64,6 +122,11 @@ class SmallMVCDriverPDO{
 		}
 	}
 
+  /**
+   * 获取构造号的查询语句.
+   *
+   * @return string
+   */
 	public function getQueryString(){
 		$tmp = $this->query_params;
     $query = $this->_query_assemble($params,$fetch_mode);
@@ -75,21 +138,47 @@ class SmallMVCDriverPDO{
 		$this->query_params = $tmp;
 		return $query;
 	}
+  /**
+   * 指定要活取的列
+   *
+   * @param mxied[] $clause 获取的列字符串,数组等.
+   *
+   * @return resource
+   */
   public function select($clause){
     $this->query_params['select'] = $clause;
 		return $this;
-  }  
+  }
+  /**
+   * 判断某条数据是否存在
+   *
+   * @return boolean
+   */
 	public function exists(){
 		$retArray = $this->query('all');
 		if(!empty($retArray))
 			return true;
 		return false;
 	}
+  /**
+   * 指定从哪个表中获取数据.
+   *
+   * @param string $table 表明
+   *
+   * @return resource
+   */
   public function from($table){
 		$this->query_params['from'] = "`{$table}`";
 		$this->table = "`{$table}`";
     return $this; 
-  }  
+  }
+  /**
+   * 指定从哪个表中获取数据.但是不设置query_params参数.
+   *
+   * @param string $table 表明
+   *
+   * @return resource
+   */
   public function table($table){
 		$this->table = "`{$table}`";
     return $this; 

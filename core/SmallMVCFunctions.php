@@ -1,4 +1,30 @@
 <?php
+/**
+ * License:
+ * (MIT License)
+ * Copyright (c) 2013 Hacksign (http://www.hacksign.cn)
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+/**
+* dump一个变量.
+*
+* 以结构化格式输出一个变量.
+*
+* 使用方法:
+* 
+*     $this->dump($var)
+*     $this->dump($var, 'xx:')
+*
+* @category 全局函数
+* @param mixed $var 要输出的变量.
+* @param string $label 结构化输出变量的前缀.
+*
+* @return string 以html代码格式化过得变量类型以及变量内容.
+*/
 function dump($var, $label=null) {
     $label = ($label === null) ? '' : rtrim($label) . ' ';
 		$output = "<div style='text-align:left;'>";
@@ -12,14 +38,38 @@ function dump($var, $label=null) {
 		$output .= "</div>";
 		echo $output;
 }
+/**
+* 输出本框架的版权信息.
+*
+* 使用方法:
+* 
+*     echo copy_right();
+*
+* @category 全局函数
+* @return string 版权信息.
+*/
 function copy_right(){
-return "<div style='text-align:center;'>
-		  <p>Power by <a href='http://www.hacksign.cn' target='_blank'>SmallMVC</a> ". SMVC_VERSION . "</p>
-		  <p>Author Hacksign</p>
-		</div>";
+  return "<div style='text-align:center;'>
+        <p>Power by <a href='http://www.hacksign.cn' target='_blank'>SmallMVC</a> ". SMVC_VERSION . "</p>
+        <p>Author Hacksign</p>
+      </div>";
 }
-//param1:the Model file name
-//param2:the params pass to Model
+/**
+* 快速新建一个Model对象.
+*
+* 快速初始化工程model目录下的一个Model对象.
+*
+* 使用方法:
+* 
+*     $model = M('Article')
+*     $model = M('Article', 'company_pool')
+*
+* @category 全局函数
+* @param string $name model目录下的对象名称(不需要Model字符串).
+* @param string $poolName 配置文件(默认为config/config.php)中的数据库池,用来区分多个数据库用.
+*
+* @return class 数据对象.
+*/
 function M($name = null, $poolName = null){
 	$params_list = func_get_args();
 	array_shift($params_list); // remove $name from params list
@@ -32,6 +82,20 @@ function M($name = null, $poolName = null){
 	}
 	return null;
 }
+/**
+* 快速新建一个Controller对象.
+*
+* 快速初始化工程controller目录下的一个controller对象.
+*
+* 使用方法:
+* 
+*     $controller = C('Article')
+*
+* @category 全局函数
+* @param string $name controller目录下的对象名称(不需要Controller字符串).
+*
+* @return class 数据对象.
+*/
 function C($name = null){
 	$params_list = func_get_args();
 	//remove $name
@@ -54,6 +118,20 @@ function C($name = null){
 	$e = new SmallMVCException("Controller Object doesn't exists", DEBUG);
 	throw $e;
 }
+/**
+* 获取配置文件中以key为名称的值.
+*
+* 获取配置文件(默认为config/config.php)中定义的,以key为名称的变量值.
+*
+* 使用方法:
+* 
+*     $controller = G('Article')
+*
+* @category 全局函数
+* @param string $key controller目录下的对象名称(不需要Controller字符串).
+*
+* @return mixed 配置文件中的值.
+*/
 function G($key = null){
 	if(empty($key)){
 		$e = new SmallMVCException("You should declare one key from config variable", DEBUG);
@@ -69,6 +147,22 @@ function G($key = null){
 		throw $e;
 	}
 }
+/**
+* 快速生成一个符合框架要求的url.
+*
+* 根据框架的路由模式,快速生成一个合法的url并返回.
+*
+* 使用方法:
+* 
+*     $url = U('Article')
+*     $url = U('Article', '#notice')
+*
+* @category 全局函数
+* @param string $key controller目录下的对象名称(不需要Controller字符串).
+* @param string $suffix 生成的url后面额外附加的字符串.
+*
+* @return mixed 配置文件中的值.
+*/
 function U($url = null, $suffix = null){
 	if(SMvc::instance(null, 'default')){
 		$config = SMvc::instance(null, 'default')->config;
@@ -94,6 +188,23 @@ function U($url = null, $suffix = null){
 		throw $e;
 	}
 }
+/**
+* 重定向页面.
+*
+* 利用http协议的302状态,生成页面跳转响应.
+*
+* 使用方法:
+* 
+*     redirect('Article', 3);
+*     $this->redirect('Article', 3, 'this is a test');
+*
+* @category 全局函数
+* @param string $url 要转向的url.
+* @param int $time 转向前等待的时间.
+* @param string $msg 转向页面的提示信息.
+*
+* @return void
+*/
 function redirect($url, $time=0, $msg='') {
     if (empty($msg))
         $msg = "<table style='text-align:center;height:100%;width:100%;'><tr><td>System will redirect to {$url} in {$time} second(s).</td></tr></table>";
@@ -116,6 +227,26 @@ function redirect($url, $time=0, $msg='') {
         exit($str);
     }
 }
+/**
+* 加载php脚本.
+*
+* 加载一个.php文件到框架中.如果只想从工程目录下加载文件,则文件以'@.'开头,目录之间以'.'分隔.如果只想从框架目录下加载,则文件以'#.'开头,目录之间以'.'分隔.
+*
+* <b><font color=red>注意</font></b>:
+*     此函数可能会改变$name参数的内容,$name按引用传递.$name在此函数返回后为该函数实际加载的文件名.
+*
+* 使用方法:
+* 
+*     load('test');
+*     load('plugins.test');
+*     load('@.plugins.test');
+*     load('#.plugins.test');
+*
+* @category 全局函数
+* @param string $name 要加在的资源URI.
+*
+* @return mixed 成功加载返回加载的资源,否则返回false.
+*/
 function load(&$name = null){
 	if(empty($name)){
 		$e = new SmallMVCException("import name is empty", DEBUG);
@@ -129,10 +260,43 @@ function load(&$name = null){
 	else
 		return false;
 }
-//const version of import which allowed pass a const string
+/**
+* load函数的别名,忽略对$filename参数的修改.
+*
+* 此函数为load函数的别名,只不过会忽略load函数对参数$filename的修改.
+*
+* 使用方法:
+* 
+*     import('test');
+*     import('plugins.test');
+*     import('@.plugins.test');
+*     import('#.plugins.test');
+*
+* @category 全局函数
+* @param string $filename 要加在的资源URI.
+*
+* @return mixed 成功加载返回加载的资源,否则返回false.
+*/
 function import($filename){
 	return load($filename);
 }
+/**
+* 此函数移除潜在的xss字符串.
+*
+* 移除潜在xss攻击字符串.
+* <b>注意</b>:
+*     该函数不保证可以过滤掉所有xss攻击.
+*     使用该函数过滤字符串时可能会获得与预期不符的结果,请谨慎使用此函数.
+*
+* 使用方法:
+* 
+*     $safe_string = remove_xss($var);
+*
+* @category 全局函数
+* @param string $val 要检查的字符串.
+*
+* @return string 返回移除xss后的字符串.
+*/
 function remove_xss($val) {
 	 // remove all non-printable characters. CR(0a) and LF(0b) and TAB(9) are allowed
 	 // this prevents some character re-spacing such as <java\0script>

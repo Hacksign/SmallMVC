@@ -1,10 +1,46 @@
 <?php
+/**
+ * License:
+ * (MIT License)
+ * Copyright (c) 2013 Hacksign (http://www.hacksign.cn)
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ */
+
+/**
+ * @name DEBUG 异常类型DEBUG
+ */
 define('DEBUG', 0);
+/**
+ * @name ERROR 异常类型ERROR
+ */
 define('ERROR', 1);
+/**
+ * @name EXCEP 异常类型EXCEP
+ */
 define('EXCEP', 2);
-define('PAGE_NOT_FOUND', 3);
-define('FILE_NOT_FOUND', 3);
-define('EXCEPTION_ACCESS_DEINED', 4);
+/**
+ * @name EXCEPTION_NOT_FOUND 异常类型NOT_FOUND,当任何东西未找到时,抛出此异常.
+ */
+define('EXCEPTION_NOT_FOUND', 3);
+/**
+ * @name EXCEPTION_ACCESS_DENIED 异常类型ACCESS_DENINED,访访问违例异常.
+ */
+define('EXCEPTION_ACCESS_DENIED', 4);
+/**
+ * @name EXCEPTION_LAYOUTFILE_ERROR 异常类型LAYOUTFILE_ERROR,模板文件有问题时抛出此异常.
+ */
+define('EXCEPTION_LAYOUTFILE_ERROR', 5);
+
+/**
+ * 框架异常类.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 class SmallMVCException extends Exception{
 	var $type = null;
 	
@@ -14,6 +50,13 @@ class SmallMVCException extends Exception{
 		parent::__construct($description);
 	}	
 }
+/**
+ * 框架异常处理类.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 class SmallMVCExceptionHandler extends Exception{
 	private static function showTracePage($e, $controller){
     SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_SYSTEM');
@@ -39,8 +82,7 @@ class SmallMVCExceptionHandler extends Exception{
 			$controller = SMvc::instance(null, 'loader')->library($controller);
 		}
 		switch($e->type){
-			case FILE_NOT_FOUND:
-			case PAGE_NOT_FOUND:
+			case EXCEPTION_NOT_FOUND:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
 				}else{
@@ -53,7 +95,7 @@ class SmallMVCExceptionHandler extends Exception{
 				}
 				break;
 			case DEBUG:
-      case EXCEPTION_ACCESS_DEINED :
+      case EXCEPTION_ACCESS_DENIED :
         $e->message = preg_replace('/(\/+)|(\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
@@ -71,6 +113,13 @@ class SmallMVCExceptionHandler extends Exception{
 		SMvc::$scriptExecComplete = true;
 	}
 }
+/**
+ * 框架异常处理函数.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 	if(error_reporting() === 0){
 		return;
@@ -121,6 +170,13 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 		}
 	}
 }
+/**
+ * 框架退出时调用的函数.
+ *
+ * @author Hacksign <evilsign@gmail.com>
+ * @license http://opensource.org/licenses/MIT MIT License
+ * @category 框架核心文件
+ */
 function SmallMVCShutdownFunction(){
 	$controller = SMvc::instance(null, 'controller');
 	if(empty($controller)){
