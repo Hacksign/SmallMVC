@@ -281,6 +281,27 @@ function import($filename){
 	return load($filename);
 }
 /**
+* 创建工程目录结构.
+*
+* 创建工程默认目录结构.
+*
+* @thorws EXCEPTION_ACCESS_DENIED 当工程目录不可写时.
+*/
+function create_project_directory(){
+  clearstatcache();
+  if(is_writable(PROJECT_ROOT.DS.APPDIR)){
+    foreach(SMvc::instance(null, 'default')->config['project']['directory'] as $each_directory){
+      if(!file_exists($each_directory)){
+        mkdir($each_directory, 0755, false);
+      }
+    }
+  }else{
+    $path = preg_replace('/(\/)+/', DS, PROJECT_ROOT.DS.APPDIR);
+    echo "<table width=100% height=100%><tr><td align=center>$path is not writable !</td></tr><table>";
+    exit();
+  }
+}
+/**
 * 此函数移除潜在的xss字符串.
 *
 * 移除潜在xss攻击字符串.

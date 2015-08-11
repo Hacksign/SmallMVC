@@ -177,7 +177,7 @@ class SmallMVCViewer {
     $regex = DS.'+';
     $cacheFile = preg_replace("/(\/+)|(\+)/", DS, $cacheFile);
 		//see if cache file is up to date
-		if (filemtime($fileName) > filemtime($cacheFile) || filemtime($layoutName) > filemtime($cacheFile)){
+		if (filemtime($cacheFile) === false || filemtime($fileName) > filemtime($cacheFile) || filemtime($layoutName) > filemtime($cacheFile)){
 			$content = file_get_contents($fileName, LOCK_EX);
 			if(!empty($layoutName)){
 				$layoutContent = file_get_contents($layoutName, LOCK_EX);
@@ -205,14 +205,14 @@ class SmallMVCViewer {
       if(!file_exists(dirname($cacheFile))){
         if(is_writable(SMvc::instance(null, 'default')->config['project']['directory']['cache'])){
           mkdir(dirname($cacheFile), 0755, false);
-        }else if(!SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
+        }else if(!SMvc::instance(null, '_SMVC_EXCEPTION_PROCESSING')){
           $e = new SmallMVCException(SMvc::instance(null, 'default')->config['project']['directory']['cache']." is not writable", EXCEPTION_ACCESS_DENIED);
           throw $e;
         }
       }
 			$content = implode("\n", $newLines);
 			if(!file_put_contents($cacheFile, $content, LOCK_EX)){
-				if(SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
+				if(SMvc::instance(null, '_SMVC_EXCEPTION_PROCESSING')){
 					$cacheFile = tempnam(sys_get_temp_dir(), '_smvc_');
 					file_put_contents($cacheFile, $content, LOCK_EX);
 				}else{
@@ -226,7 +226,7 @@ class SmallMVCViewer {
 		require_once($cacheFile);
 		$content = ob_get_contents();
 		ob_end_clean();
-		if(SMvc::instance(null, '_SMVC_EXCEPTION_SYSTEM')){
+		if(SMvc::instance(null, '_SMVC_EXCEPTION_PROCESSING')){
 			unlink($cacheFile);
 		}
 		if($getStaticHtml){

@@ -59,7 +59,6 @@ class SmallMVCException extends Exception{
  */
 class SmallMVCExceptionHandler extends Exception{
 	private static function showTracePage($e, $controller){
-    SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_SYSTEM');
 		$backtrace = $e->getTrace();
 		for($i = 0; $i < count($backtrace); $i++){
 			if(!empty($backtrace[$i + 1])){
@@ -76,6 +75,7 @@ class SmallMVCExceptionHandler extends Exception{
 		$controller->display('#.backtrace');
 	}
   public static function handleException(SmallMVCException $e){
+    SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_PROCESSING');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
@@ -86,7 +86,10 @@ class SmallMVCExceptionHandler extends Exception{
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
 				}else{
-					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
+          if(!file_exists(SMvc::instance(null, 'default')->config['project']['directory']['cache'])){
+            create_project_directory();
+            $controller->display('#.welcome');
+          }else if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['404']);
 					}else{
 						$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
