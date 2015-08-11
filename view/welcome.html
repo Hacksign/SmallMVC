@@ -66,23 +66,7 @@
 				</p>
 				<p class="title"><a name="one-minute-start">[ One Minute Start ]</a></p>
 				<p class='trace'>
-					1.Create directories names below whith proper read-write access privileges(eg. in /srv/http/website/).
-				</p>
-<pre lang='bash'>
-	$ mkdir /srv/http/website
-	$ cd /srv/http
-	$ mkdir /srv/http/{cache,config,controller,model,plugins,public,view}
-	$ ls -l website/
-	drwx------ 0 http http 4096 04-29 14:00 cache
-	drwx------ 0 http http 4096 04-29 14:00 config
-	drwx------ 0 http http 4096 04-29 14:00 controller
-	drwx------ 0 http http 4096 04-29 14:00 model
-	drwx------ 0 http http 4096 04-29 14:00 plugins
-	drwx------ 0 http http 4096 04-29 14:00 public
-	drwx------ 0 http http 4096 04-29 14:00 view
-</pre>
-				<p class='trace'>
-					2.Create config.php in config directory with below content:
+					1.Create config.php in config directory of your project with below content:
 				</p>
 <pre lang='php'>
 	$ cat config/config.php 
@@ -91,7 +75,7 @@
 	?&gt;
 </pre>
 				<p class='trace'>
-					3.Create IndexController.php in controller directory with below content:
+					2.Create IndexController.php in controller directory with below content:
 				</p>
 <pre>
 	$ cat controller/IndexController.php 
@@ -109,7 +93,7 @@
 	?&gt;
 </pre>
 				<p class='trace'>
-					4.Create index_page.html content_file.html layout_file.html in view directory with below content:
+					3.Create index_page.html content_file.html layout_file.html in view directory with below content:
 				</p>
 <pre>
 	$ cat view/*.html
@@ -132,7 +116,7 @@
 	&lt;/div&gt;
 </pre>
 				<p class='trace'>
-					5.Create entry file index.php with below content:
+					4.Create entry file index.php with below content:
 				</p>
 <pre>
 	$cat /srv/http/index.php
@@ -142,7 +126,7 @@
 	?&gt;
 </pre>
 				<p class='trace'>
-					6.All set, you can access index/default method in IndexController.php with url below:
+					5.All set, you can access index/default method in IndexController.php with url below:
 				</p>
 <pre>
 	http://your-server.com/index.php/Index/index
@@ -218,7 +202,6 @@
 					<span style='color:red'>G('field_name')</span>: get the field_name content in $config['field_name']. <br/>
 					<span style='color:red'>load('file_name')</span>: import a file with file_name if the file_name is like this A.b.c then import c.php in directory A/b/<br/>
 					<br/>
-					<span style='color:red'>For more information please read 'SMVC Document.docx'</span>
 				</p>
 
 			</div>

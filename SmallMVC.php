@@ -14,7 +14,7 @@ if(!defined('DS'))
 if(!defined('PS'))
 	define('PS', PATH_SEPARATOR);
 if(!defined('SMVC_VERSION'))
-	define('SMVC_VERSION', '1.0 beta 1');
+	define('SMVC_VERSION', '1.0 beta 2');
 if(!defined('SMVC_BASEDIR'))
 	define('SMVC_BASEDIR', dirname(__FILE__));
 if(!defined('SMVC_CONFIGDIR'))
@@ -25,7 +25,7 @@ if(!defined('SMVC_PLUGINDIR'))
 	define('SMVC_PLUGINDIR', SMVC_BASEDIR . DS . 'plugins');
 define('SMVC_ERROR_HANDLING', 1);
 if(!defined('APPDIR')){
-	echo "APPDIR must be defined!";
+  echo "<table width=100% height=100%><tr><td align=center>APPDIR must be defined!<br/>add \"define('APPDIR', 'dirname');\" to your entry file.</td></tr></table>";
 	exit(0);
 }
 if(!defined('PROJECT_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
@@ -110,7 +110,7 @@ set_include_path(
 				set_error_handler($this->config['system']['error']['function']);
 				register_shutdown_function($this->config['system']['error']['shutdown']);
 			}else{
-				echo 'can not find error handler file!';
+				echo '<table width=100% height=100%><tr><td align=center>can not find error handler file!</td></tr></table>';
 				exit(0);
 			}
 		}
