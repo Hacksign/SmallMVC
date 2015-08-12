@@ -296,7 +296,7 @@ function create_project_directory(){
       }
     }
   }else{
-    $path = preg_replace('/(\/)+/', DS, PROJECT_ROOT.DS.APPDIR);
+    $path = preg_replace('/(\/+)|(\\+)/', DS, PROJECT_ROOT.DS.APPDIR);
     echo "<table width=100% height=100%><tr><td align=center>$path is not writable !</td></tr><table>";
     exit();
   }

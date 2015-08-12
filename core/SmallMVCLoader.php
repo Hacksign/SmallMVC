@@ -17,12 +17,22 @@
  * @category 框架核心文件
  */
 class SmallMVCLoader{
+  /**
+   * 构造函数
+   */
 	function __construct(){
 	}
-	//auto create model
-	//param1:Model file name without .php ext
-	//param2:PoolName which database will be used
-	//param3:be geted through func_get_args(), params pass to model
+  /**
+   * 加载Model类,并初始化一个实例.
+   *
+   * 已经加载的Model对象不会重新被实例化,而是直接返回之前加载的Model对象.
+   *
+   * @param string $modelName Model对象名称,不需要.php后缀或Model后缀
+   * @param string|null $poolName 数据库池标识,如果为null,则使用默认名称'database'
+   * @param ... 更多的参数会被作为modelName对象的构造参数.
+   *
+   * @return object
+   */
 	public function model($modelName, $poolName = null){
 		$params_list = func_get_args();
 		//remove modelName and poolName
@@ -53,12 +63,9 @@ class SmallMVCLoader{
 		if(!empty($controller) && isset($controller->$modelName))
 			return $controller->$modelName;
 
-		$fileName = $modelName . '.php';
-		if(!$this->includeFile($fileName)){
+		if(!$this->includeFile($modelName)){
 			$modelName = SMvc::instance(null, 'default')->config['system']['model'];
-			$fileName = $modelName.'.php';
-			$this->includeFile($fileName);
-			$modelName = preg_replace('/(.*)\.php$/', '$1', $fileName);
+			$this->includeFile($modelName);
 		}
 		$refClass = new ReflectionClass($modelName);
 		try{
@@ -74,10 +81,16 @@ class SmallMVCLoader{
 			$controller->{$modelName} = $modelInstance;
 		return $modelInstance;
 	}
-	//auto create library
-	//params1: libraray name
-	//params2: params pass to library
-	//params...
+  /**
+   * 初始化libName所代表的Library类,并返回此类的实例.
+   *
+   * 该函数可能会修改libName为实际加载的类名.每一次调用此函数,都会重新实例化一个libName对象.
+   *
+   * @param $libName 要加载的类名.改名成可能会根据实际加载的类名而被改变.
+   * @param ... 更多的参数将会被当作libName对象的构造参数.
+   *
+   * @return object
+   */
 	public function library(&$libName){
 		$params_list = func_get_args();
 		//remove $libName
@@ -108,7 +121,17 @@ class SmallMVCLoader{
 			throw $e;
 		}
 	}
-	//only load script but do not auto create
+  /**
+   * 加载常规文件
+   *
+   * 加载任意的常规文件到框架中,并不会自动创建对象.
+   *
+   * 加载的文件名可能会根据实际加载的文件名称而被改变.
+   *
+   * @param $scriptName 要加载的文件名,可能会被改变.
+   *
+   * @return boolean
+   */
 	public function script(&$scriptName){
 		if(!preg_match('/^[0-9a-zA-Z@][a-zA-Z_.0-9]+$/', $scriptName)){
 			$e = new SmallMVCException("Invalid script name '{$scriptName}'", DEBUG);
@@ -116,6 +139,13 @@ class SmallMVCLoader{
 		}
 		return $this->includeFile($scriptName);
 	}
+  /**
+   * 判断文件是否存在
+   *
+   * @param $fileName 文件名,可以不包含php后缀
+   *
+   * @return boolean
+   */
 	private function fileExists($fileName = null){
 		/*check errors and prepare data*/
 		if(!isset($fileName) || empty($fileName))
@@ -137,7 +167,22 @@ class SmallMVCLoader{
 		}
 		return false;
 	}
-	private function includeFile(&$fileName = null){ // includeFile will modify $fileName to the File name which is included without the .php suffix
+  /**
+   * 包含fileName指定的文件.
+   *
+   * fileName可以不以.php结尾.fileName会被修正为真正包含的文件名(不包含'.php'结尾).
+   *
+   * 如果$fileName以'@.'开头.以'@.'开头时表示只从工程目录下寻找文件.
+   *
+   * 如果不以'@.'开头,则首先在项目目录下寻找文件,然后再工程目录下寻找文件.
+   *
+   * 每个目录之间以'.'分隔.
+   *
+   * @param string $fileName 要包含的文件名.
+   *
+   * @return void
+   */
+	private function includeFile(&$fileName = null){
 		if(!isset($fileName) || empty($fileName)){
 			$e = new SmallMVCException("fileName must be set", DEBUG);
 			throw $e;
@@ -164,6 +209,20 @@ class SmallMVCLoader{
 				return true;
 			}
 		}
+    //still not found
+    //sacrifice capability to find
+		foreach($ps as $path){
+      $dir_handle = opendir($path);
+      foreach(readdir($dir_handle) as $each_file){
+        if(strncmp($each_file, $fileName) === 0 && ($each_file !== '.' || $each_file !== '..')){
+          require_once($path . DS . $each_file);
+          $fileName = $each_file;
+          closedir($dir_handle);
+          return true;
+        }
+      }
+      closedir($dir_handle);
+    }
 		return false;
 	}
 }
