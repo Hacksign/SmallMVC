@@ -63,7 +63,7 @@ class SmallMVCLoader{
 		if(!empty($controller) && isset($controller->$modelName))
 			return $controller->$modelName;
 
-		if(!$this->includeFile($modelName)){
+		if($modelNameEmpty || !$this->includeFile($modelName)){
 			$modelName = SMvc::instance(null, 'default')->config['system']['model'];
 			$this->includeFile($modelName);
 		}
@@ -212,16 +212,14 @@ class SmallMVCLoader{
     //still not found
     //sacrifice capability to find
 		foreach($ps as $path){
-      $dir_handle = opendir($path);
-      foreach(readdir($dir_handle) as $each_file){
-        if(strncmp($each_file, $fileName) === 0 && ($each_file !== '.' || $each_file !== '..')){
+			$path = preg_replace('/(\/+)|(\\+)/', DS, $path);
+      foreach(scandir($path) as $each_file){
+        if(strcasecmp($each_file, $fileName) === 0 && ($each_file !== '.' || $each_file !== '..')){
           require_once($path . DS . $each_file);
-          $fileName = $each_file;
-          closedir($dir_handle);
+					$fileName = preg_replace('/(.*)\.php$/', '$1', $each_file);
           return true;
         }
       }
-      closedir($dir_handle);
     }
 		return false;
 	}
