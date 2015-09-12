@@ -94,8 +94,7 @@ class SmallMVCRouter{
 			foreach($this->SMVCOBJ->urlSegments as $value => $key){
 				if($value % 2 == 0 && $value != 0)
 					$_GET[$this->SMVCOBJ->urlSegments[$value - 1]] = $key;
-				else
-					$_GET[$key] = null;
+				else if(strpos($key, '?') === FALSE) $_GET[$key] = null;
 			}
 		}else $this->SMVCOBJ->urlSegments = array(1 => $this->SMVCOBJ->config['routing']['controller'], 2 => $this->SMVCOBJ->config['routing']['action']);
 	}
