@@ -90,6 +90,9 @@ class SmallMVCRouter{
 				$this->SMVCOBJ->urlSegments[1] = $this->SMVCOBJ->config['routing']['controller'];
 			}
 			empty($this->SMVCOBJ->urlSegments[2]) ? $this->SMVCOBJ->urlSegments[2] = $this->SMVCOBJ->config['routing']['action'] : null;
+            if(strpos($this->SMVCOBJ->urlSegments[2], '?') !== FALSE){
+                $this->SMVCOBJ->urlSegments[2] = substr($this->SMVCOBJ->urlSegments[2], 0, strpos($this->SMVCOBJ->urlSegments[2], '?'));
+            }
 			//parse params to $_GET
 			foreach($this->SMVCOBJ->urlSegments as $value => $key){
 				if($value % 2 == 0 && $value != 0)
