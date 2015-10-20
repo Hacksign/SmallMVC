@@ -490,7 +490,6 @@ class SmallMVCDriverPDO{
         /* execute with params */
         try {
             $this->result->execute($params);  
-            $this->result->debugDumpParams();
         } catch (PDOException $e) {
             $e = new SmallMVCException(sprintf("PDO Error: %s Query: %s",$e->getMessage(),$query), DEBUG);
             throw $e;
