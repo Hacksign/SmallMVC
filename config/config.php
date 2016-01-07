@@ -28,6 +28,7 @@ $config['project']['directory']['controller'] = PROJECT_ROOT.DS.APPDIR.DS.'contr
 $config['project']['directory']['model'] = PROJECT_ROOT.DS.APPDIR.DS.'model';
 $config['project']['directory']['view'] = PROJECT_ROOT.DS.APPDIR.DS.'view';
 $config['project']['directory']['cache'] = PROJECT_ROOT.DS.APPDIR.DS.'cache';
+$config['project']['directory']['public'] = PROJECT_ROOT.DS.APPDIR.DS.'public';
 
 //auto loads
 $config['autoloads']['scripts'] = array($config['system']['controller'], 'SmallMVCFunctions', $config['system']['model']);
