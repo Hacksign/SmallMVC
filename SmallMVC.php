@@ -21,8 +21,6 @@ if(!defined('SMVC_CONFIGDIR'))
 	define('SMVC_CONFIGDIR', SMVC_BASEDIR . DS . 'config');
 if(!defined('SMVC_COREDIR'))
 	define('SMVC_COREDIR', SMVC_BASEDIR . DS . 'core');
-if(!defined('SMVC_PLUGINDIR'))
-	define('SMVC_PLUGINDIR', SMVC_BASEDIR . DS . 'plugins');
 define('SMVC_ERROR_HANDLING', 1);
 if(!defined('APPDIR')){
   echo "<table width=100% height=100%><tr><td align=center>APPDIR must be defined!<br/>add \"define('APPDIR', 'dirname');\" to your entry file.</td></tr></table>";
@@ -38,8 +36,7 @@ if(!defined('PROJECT_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
 set_include_path(
 	get_include_path() . PS .
 	SMVC_CONFIGDIR . PS .
-	SMVC_COREDIR . PS .
-	SMVC_PLUGINDIR . PS
+	SMVC_COREDIR . PS
 );
 /**
  * 框架入口文件类.

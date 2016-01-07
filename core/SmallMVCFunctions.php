@@ -238,9 +238,9 @@ function redirect($url, $time=0, $msg='') {
 * 使用方法:
 * 
 *     load('test');
-*     load('plugins.test');
-*     load('@.plugins.test');
-*     load('#.plugins.test');
+*     load('directory.test');
+*     load('@.directory.test');
+*     load('#.directory.test');
 *
 * @category 全局函数
 * @param string $name 要加在的资源URI.
@@ -268,9 +268,9 @@ function load(&$name = null){
 * 使用方法:
 * 
 *     import('test');
-*     import('plugins.test');
-*     import('@.plugins.test');
-*     import('#.plugins.test');
+*     import('directory.test');
+*     import('@.directory.test');
+*     import('#.directory.test');
 *
 * @category 全局函数
 * @param string $filename 要加在的资源URI.
