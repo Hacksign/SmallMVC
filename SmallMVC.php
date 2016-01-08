@@ -21,6 +21,8 @@ if(!defined('SMVC_CONFIGDIR'))
 	define('SMVC_CONFIGDIR', SMVC_BASEDIR . DS . 'config');
 if(!defined('SMVC_COREDIR'))
 	define('SMVC_COREDIR', SMVC_BASEDIR . DS . 'core');
+if(!defined('SMVC_PLUGINSDIR'))
+	define('SMVC_PLUGINSDIR', SMVC_BASEDIR . DS . 'plugins');
 define('SMVC_ERROR_HANDLING', 1);
 if(!defined('APPDIR')){
   echo "<table width=100% height=100%><tr><td align=center>APPDIR must be defined!<br/>add \"define('APPDIR', 'dirname');\" to your entry file.</td></tr></table>";
@@ -33,11 +35,6 @@ if(!defined('PROJECT_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
 	define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 }
 
-set_include_path(
-	get_include_path() . PS .
-	SMVC_CONFIGDIR . PS .
-	SMVC_COREDIR . PS
-);
 /**
  * 框架入口文件类.
  *
@@ -76,6 +73,12 @@ set_include_path(
 				require_once(PROJECT_ROOT . DS . APPDIR . DS . 'config'. DS .'config.php');
 			}
 			$this->config = $config;
+            set_include_path(
+                get_include_path() . PS .
+                SMVC_CONFIGDIR . PS .
+                SMVC_COREDIR . PS .
+                SMVC_PLUGINSDIR . PS
+            );
 			if(!preg_match('/^[a-z0-9].*\.php$/i',$this->config['system']['loader'])) $this->config['system']['loader'] .= '.php';
 			if(file_exists(SMVC_COREDIR . DS . $this->config['system']['loader'])){
 				//工具类Loader,用于加载框架各种文件
