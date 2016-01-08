@@ -195,7 +195,20 @@ class SmallMVCLoader{
             $includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']);
             $includePath = str_replace(DS.DS, DS, $includePath);
         }else{
-            $includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']) . PS . get_include_path();
+            //pick out path not allowed by php settings'open_basedir'
+            // . is a exception
+            $allowedPath = explode(PS, ini_get('open_basedir'));
+            $includePath = explode(PS, get_include_path());
+            foreach($includePath as $eachPath){
+                if($eachPath !== '.'){
+                    if(in_array($eachPath, $allowedPath)){
+                        $checkedPath[] = $eachPath;
+                    }
+                }else{
+                    $checkedPath[] = $eachPath;
+                }
+            }
+            $includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']) . PS . implode(PS, $checkedPath);
         }
         $subPath = explode('.', $fileName);
         $fileName = implode('.', array_slice($subPath, -2, 2));
