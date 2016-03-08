@@ -195,7 +195,8 @@ class SmallMVCLoader{
             $includePath = implode(PS, SMvc::instance(null, 'default')->config['project']['directory']);
             $includePath = str_replace(DS.DS, DS, $includePath);
         }else{
-            if(!empty(ini_get('open_basedir'))){
+            $open_basedir = ini_get('open_basedir');
+            if(!empty($open_basedir)){
                 //pick out path not allowed by php settings'open_basedir'
                 // . is a exception
                 $allowedPath = explode(PS, ini_get('open_basedir'));
