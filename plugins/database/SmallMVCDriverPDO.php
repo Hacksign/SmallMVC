@@ -512,7 +512,7 @@ class SmallMVCDriverPDO{
     }
     private function filter_query_params($item, $key){
         $regexs = array(
-            '(and|or)\\b\s+(>|<|=|in|like)',
+            '\b(and|or)\\b\s+(>|<|=|in|like)',
             '\\/\\*.+?\\*\\/',
             '<\\s*script\\b',
             '\\bEXEC\\b',
