@@ -48,6 +48,10 @@ class SmallMVCLoader{
             $table = preg_replace("/(.*?)Model$/", "$1", $table);
         }
         $poolName = empty($poolName) ? 'database' : $poolName;
+        if(!in_array($poolName,array_keys(SMvc::instance(null,'default')->config))){
+            $e = new SmallMVCException("Pool name '{$poolName}' is not configured in \$config", DEBUG);
+            throw $e;
+        }
         (preg_match("/Model$/", $modelName) || $modelNameEmpty)? null : $modelName .= 'Model';
         if(!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9_]+$/', $modelName) && !$modelNameEmpty){
             $e = new SmallMVCException("Model name '{$modelName}' is an invalid syntax", DEBUG);
