@@ -91,14 +91,19 @@ class SmallMVCRouter{
 			}
 			empty($this->SMVCOBJ->urlSegments[2]) ? $this->SMVCOBJ->urlSegments[2] = $this->SMVCOBJ->config['routing']['action'] : null;
 			for($i = 1; $i<count($this->SMVCOBJ->urlSegments); ++$i){
-            if(strpos($this->SMVCOBJ->urlSegments[$i], '?') !== FALSE){
-                $this->SMVCOBJ->urlSegments[$i] = substr($this->SMVCOBJ->urlSegments[$i], 0, strpos($this->SMVCOBJ->urlSegments[$i], '?'));
-            }
+                if(strpos($this->SMVCOBJ->urlSegments[$i], '?') !== FALSE){
+                    $this->SMVCOBJ->urlSegments[$i] = substr($this->SMVCOBJ->urlSegments[$i], 0, strpos($this->SMVCOBJ->urlSegments[$i], '?'));
+                }
 			}
 			//parse params to $_GET
 			foreach($this->SMVCOBJ->urlSegments as $value => $key){
-				if($value % 2 == 0 && $value != 0)
-					$_GET[$this->SMVCOBJ->urlSegments[$value - 1]] = $key;
+                if($value % 2 == 0 && $value != 0){
+                    //there is no '?' in pathinfo mode
+                    if(strpos($key, '?') !== FALSE){
+                        $key = explode('?', $key)[0];
+                    }
+                    $_GET[$this->SMVCOBJ->urlSegments[$value - 1]] = $key;
+                }
 				else if(strpos($key, '?') === FALSE) $_GET[$key] = null;
 			}
 		}else $this->SMVCOBJ->urlSegments = array(1 => $this->SMVCOBJ->config['routing']['controller'], 2 => $this->SMVCOBJ->config['routing']['action']);
