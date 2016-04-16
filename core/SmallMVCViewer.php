@@ -163,10 +163,12 @@ class SmallMVCViewer {
 		}
 		//assign framework pre-defined variables
 		if(!empty($_SERVER['SCRIPT_NAME'])){
-			$controllerName = get_class(SMvc::instance(null,'controller'));
+			$controllerName = SMvc::instance(null,'default')->urlSegments[1];
 			$controllerName = preg_replace('/(.*)Controller$/i', '$1', $controllerName);
+			$actionName = SMvc::instance(null,'default')->urlSegments[2];
 			$this->assign('_entry_', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME']));
 			$this->assign('_controller_', preg_replace('/^\/(.*)/', '$1' , $controllerName));
+			$this->assign('_action_', preg_replace('/^\/(.*)/', '$1' , $actionName));
 		}
 		if(!strlen(APPDIR)) $this->assign('_appdir_', '.');
 		else $this->assign('_appdir_', APPDIR);
