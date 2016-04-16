@@ -166,7 +166,7 @@ class SmallMVCViewer {
 			$controllerName = get_class(SMvc::instance(null,'controller'));
 			$controllerName = preg_replace('/(.*)Controller$/i', '$1', $controllerName);
 			$this->assign('_entry_', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME']));
-			$this->assign('_controller_', preg_replace('/^\/(.*)/', '$1' , $_SERVER['SCRIPT_NAME'] . '/' . $controllerName));
+			$this->assign('_controller_', preg_replace('/^\/(.*)/', '$1' , $controllerName));
 		}
 		if(!strlen(APPDIR)) $this->assign('_appdir_', '.');
 		else $this->assign('_appdir_', APPDIR);
