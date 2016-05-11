@@ -74,7 +74,7 @@ class SmallMVCExceptionHandler extends Exception{
 		$controller->assign('info', $e->message);
 		$controller->display('#.backtrace');
 	}
-  public static function handleException(SmallMVCException $e){
+  public static function handleException($e){
     SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_PROCESSING');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
@@ -98,8 +98,8 @@ class SmallMVCExceptionHandler extends Exception{
 				}
 				break;
 			case DEBUG:
-      case EXCEPTION_ACCESS_DENIED :
-        $e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
+            case EXCEPTION_ACCESS_DENIED :
+              $e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
