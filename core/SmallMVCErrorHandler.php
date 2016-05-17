@@ -98,8 +98,8 @@ class SmallMVCExceptionHandler extends Exception{
 				}
 				break;
 			case DEBUG:
-      case EXCEPTION_ACCESS_DENIED :
-        $e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
+            case EXCEPTION_ACCESS_DENIED :
+              $e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
