@@ -33,6 +33,11 @@ if(!defined('PROJECT_ROOT') && !empty($_SERVER['SCRIPT_NAME'])){
 	define('PROJECT_ROOT', $_SERVER['DOCUMENT_ROOT'] . DS . dirname($_SERVER['SCRIPT_NAME']));
 	define('PROJECT_DIR', preg_replace('/^\/(.*)/', '$1', dirname($_SERVER['SCRIPT_NAME'])));
 	define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
+    $entry_position = '/'.PROJECT_DIR.'/'.PROJECT_ENTRYSCRIPT;
+    do{
+        $entry_position = str_replace('//', '/', $entry_position);
+    }while(strpos($entry_position, '//') !== False);
+	define('PROJECT_ENTRY', $entry_position);
 }
 
 /**
