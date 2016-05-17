@@ -371,8 +371,8 @@ function remove_xss($val) {
 	 }
 	 return $val;
 }
-//parse http request headers if there is no
-function getallheaders if (!function_exists('getallheaders')) {
+//parse http request headers if there is no function getallheaders 
+if (!function_exists('getallheaders')) {
     function getallheaders() {
         $headers = '';
         foreach ($_SERVER as $name => $value) {
