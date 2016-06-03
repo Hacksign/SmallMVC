@@ -3,6 +3,7 @@
  * 项目配置文件.
  */
 $config['debug'] = false;
+$config['X-Powered-By'] = true;
 
 $config['routing']['search'] =  array();
 $config['routing']['replace'] = array();

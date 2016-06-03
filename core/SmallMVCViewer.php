@@ -237,8 +237,8 @@ class SmallMVCViewer {
 			if(!headers_sent()){
 				$charset = SMvc::instance(null, 'default')->config['charset'];
 				header("content-Type: text/html; charset={$charset}");
-        header("Cache-control: private");
-				header("X-Powered-By:SmallMVC/".SMVC_VERSION);
+                header("Cache-control: private");
+                if(G('X-Powered-By')) header("X-Powered-By:SmallMVC/".SMVC_VERSION);
 			}
 			echo $content;
 			return null;
