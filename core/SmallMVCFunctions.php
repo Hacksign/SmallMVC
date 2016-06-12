@@ -215,8 +215,12 @@ function redirect($url, $time=0, $msg='') {
             header("Location: " . $url);
         } else {
             header("refresh:{$time};url={$url}");
-						$controller = SMvc::instance(null, 'controller');
-						$controller->assign('info', $msg);
+            $controller = SMvc::instance(null, 'controller');
+            if(!$controller){
+                $controller = C(G('system')['controller']);
+
+            }
+            $controller->assign('info', $msg);
             $controller->display('#.message');
         }
         exit();
