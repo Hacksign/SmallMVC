@@ -43,7 +43,7 @@ define('EXCEPTION_LAYOUTFILE_ERROR', 5);
  */
 class SmallMVCException extends Exception{
 	var $type = null;
-	
+
 	function __construct($description, $type = null){
 		if(!empty($type))
 			$this->type = $type;
@@ -70,36 +70,46 @@ class SmallMVCExceptionHandler extends Exception{
 			}else
 				$backtrace[$i]['function'] = 'Entry';
 		}
-		$controller->assign('backtrace', $backtrace);
-		$controller->assign('info', $e->message);
-		$controller->display('#.backtrace');
+		$headers = getallheaders();
+		if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
+			echo json_encode(['backtrace' => $backtrace, 'message' => $e->message, 'error' => true]);
+		}else{
+			$controller->assign('backtrace', $backtrace);
+			$controller->assign('info', $e->message);
+			$controller->display('#.backtrace');
+		}
 	}
-  public static function handleException($e){
-    SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_PROCESSING');
+	public static function handleException($e){
+		SMvc::instance(new stdClass(), '_SMVC_EXCEPTION_PROCESSING');
 		$controller = SMvc::instance(null, 'controller');
 		if(!$controller){
 			$controller = SMvc::instance(null, 'default')->config['system']['controller'];
 			$controller = SMvc::instance(null, 'loader')->library($controller);
 		}
+		$headers = getallheaders();
 		switch($e->type){
 			case EXCEPTION_NOT_FOUND:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
 				}else{
-          if(!file_exists(SMvc::instance(null, 'default')->config['project']['directory']['cache'])){
-            create_project_directory();
-            $controller->display('#.welcome');
-          }else if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
+					if(!file_exists(SMvc::instance(null, 'default')->config['project']['directory']['cache'])){
+						create_project_directory();
+						$controller->display('#.welcome');
+					}else if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['404']);
 					}else{
-						$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
-						$controller->display('#.message');
+						if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
+							echo json_encode(['message' => $e->message, 'error' => true]);
+						}else{
+							$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
+							$controller->display('#.message');
+						}
 					}
 				}
 				break;
 			case DEBUG:
-            case EXCEPTION_ACCESS_DENIED :
-              $e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
+			case EXCEPTION_ACCESS_DENIED :
+				$e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
@@ -107,8 +117,12 @@ class SmallMVCExceptionHandler extends Exception{
 					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['error'])){
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['error']);
 					}else{
-						$controller->assign('info', "Ops~.something is wrong!");
-						$controller->display('#.message');
+						if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
+							echo json_encode(['message' => 'Ops~.something is wrong!', 'error' => true]);
+						}else{
+							$controller->assign('info', 'Ops~.something is wrong!');
+							$controller->display('#.message');
+						}
 					}
 				}
 				break;
@@ -158,18 +172,23 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			default:
 				if(SMvc::instance(null,'default')->config['debug']){
 					$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
-								<b>Message:</b> {$errstr}<br />
-								<b>File:</b> {$errfile}<br />
-								<b>Line:</b> {$errline}
-								</span>";
+						<b>Message:</b> {$errstr}<br />
+						<b>File:</b> {$errfile}<br />
+						<b>Line:</b> {$errline}
+					</span>";
 				}else{
 					$message = "Fatal Erro !Please check your log file!";
 				}
 				break;
 		}
 		if(!SMvc::$scriptExecComplete && !empty($message)){
-			$controller->assign('info', $message);
-			$controller->display('#.message');
+			$headers = getallheaders();
+			if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
+				echo json_encode(['message' => $message, 'error' => true]);
+			}else{
+				$controller->assign('info', $message);
+				$controller->display('#.message');
+			}
 		}
 	}
 }
@@ -188,16 +207,21 @@ function SmallMVCShutdownFunction(){
 	$e = error_get_last();
 	if($e && SMvc::instance(null,'default')->config['debug']){
 		$message = "<span style='text-align: left; border: 1px solid black; color: black; display: block; margin: 1em 0; padding: .33em 6px'>
-					<b>Message:</b> {$e['message']}<br />
-					<b>File:</b> {$e['file']}<br />
-					<b>Line:</b> {$e['line']}
-					</span>";
+			<b>Message:</b> {$e['message']}<br />
+			<b>File:</b> {$e['file']}<br />
+			<b>Line:</b> {$e['line']}
+		</span>";
 	}else if($e){
 		$message = "Fatal Erro !Please check your log file!";
 	}
 	if($e && !SMvc::$scriptExecComplete){
-		$controller->assign('info', $message);
-		$controller->display('#.message');
+		$headers = getallheaders();
+		if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
+			echo json_encode(['message' => $message, 'error' => true]);
+		}else{
+			$controller->assign('info', $message);
+			$controller->display('#.message');
+		}
 	}
 }
 ?>
