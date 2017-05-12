@@ -515,7 +515,7 @@ class SmallMVCDriverPDO{
             '\b(and|or)\\b\s+(>|<|=|in|like)',
             '\\/\\*.+?\\*\\/',
             '<\\s*script\\b',
-            '\\bEXEC\\b',
+            'exec(\s|\+)+(s|x)p\w+',
             'UNION.+?Select',
             'Update.+?SET',
             'Insert\\s+INTO.+?VALUES',

@@ -72,10 +72,11 @@ class SmallMVCExceptionHandler extends Exception{
 		}
 		$headers = getallheaders();
 		if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
-			echo json_encode(['backtrace' => $backtrace, 'message' => $e->message, 'error' => true]);
+			echo json_encode(['backtrace' => $backtrace, 'message' => $e->getMessage(), 'error' => true]);
 		}else{
+            header('HTTP/1.1 500 Internal Server Error');
 			$controller->assign('backtrace', $backtrace);
-			$controller->assign('info', $e->message);
+			$controller->assign('info', $e->getMessage());
 			$controller->display('#.backtrace');
 		}
 	}
@@ -96,12 +97,14 @@ class SmallMVCExceptionHandler extends Exception{
 						create_project_directory();
 						$controller->display('#.welcome');
 					}else if(!empty(SMvc::instance(null, 'default')->config['project']['page']['404'])){
+                        header('HTTP/1.1 404 Not Found'); 
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['404']);
 					}else{
 						if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
-							echo json_encode(['message' => $e->message, 'error' => true]);
+							echo json_encode(['message' => $e->getMessage(), 'error' => true]);
 						}else{
-							$controller->assign('info', $e->message."<br/>404 - NOT FOUND ERROR :(");
+							$controller->assign('info', $e->getMessage()."<br/>404 - NOT FOUND ERROR :(");
+                            header('HTTP/1.1 404 Not Found'); 
 							$controller->display('#.message');
 						}
 					}
@@ -109,17 +112,19 @@ class SmallMVCExceptionHandler extends Exception{
 				break;
 			case DEBUG:
 			case EXCEPTION_ACCESS_DENIED :
-				$e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
+				//$e->message = preg_replace('/(\/+)|(\\+)/', DS,$e->message);
 			default:
 				if(SMvc::instance(null, 'default')->config['debug']){
 					SmallMVCExceptionHandler::showTracePage($e, $controller);
 				}else{
 					if(!empty(SMvc::instance(null, 'default')->config['project']['page']['error'])){
+                        header('HTTP/1.1 500 Internal Server Error');
 						$controller->display(SMvc::instance(null, 'default')->config['project']['page']['error']);
 					}else{
 						if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
 							echo json_encode(['message' => 'Ops~.something is wrong!', 'error' => true]);
 						}else{
+                            header('HTTP/1.1 500 Internal Server Error');
 							$controller->assign('info', 'Ops~.something is wrong!');
 							$controller->display('#.message');
 						}
@@ -186,6 +191,7 @@ function SmallMVCErrorHandler($errno, $errstr, $errfile, $errline){
 			if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
 				echo json_encode(['message' => $message, 'error' => true]);
 			}else{
+                header('HTTP/1.1 500 Internal Server Error');
 				$controller->assign('info', $message);
 				$controller->display('#.message');
 			}
@@ -219,6 +225,7 @@ function SmallMVCShutdownFunction(){
 		if(isset($headers['Accept']) && strtolower($headers['Accept']) === 'json'){
 			echo json_encode(['message' => $message, 'error' => true]);
 		}else{
+            header('HTTP/1.1 500 Internal Server Error');
 			$controller->assign('info', $message);
 			$controller->display('#.message');
 		}
